@@ -1,0 +1,37 @@
+package com.example.pai_demo.entity;
+
+import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author GilbertYoung
+ * @date 2026/07/06 15:43
+ */
+
+/**
+ * 所有实体的基类
+ */
+@Data
+@MappedSuperclass // 映射父类，不单独建表
+public class BaseEntity implements Serializable {
+    /**
+     * 自增长主键
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "int comment '主键id'")
+    private Integer id;
+    /**
+     * 创建时间
+     */
+    @Column(name = "create_time", columnDefinition = "datetime comment '创建时间'")
+    private Date createTime;
+    /**
+     * 更新时间
+     */
+    @Column(name = "update_time", columnDefinition = "datetime comment '更新时间'")
+    private Date updateTime;
+}

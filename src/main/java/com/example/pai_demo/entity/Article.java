@@ -1,0 +1,38 @@
+package com.example.pai_demo.entity;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+/**
+ * @author GilbertYoung
+ * @date 2026/07/06 16:31
+ */
+
+/**
+ * 文章相关信息类（不包含正文）
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Entity
+@Table(name = "article")
+public class Article extends BaseEntity {
+    /**
+     * 文章名称
+     */
+    @Column(name = "title", nullable = false)
+    private String title;
+    /**
+     * 文章发布的用户id
+     */
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
+    /**
+     * 文章对应的合集id
+     */
+    @Column(name = "catagory_id")
+    private Integer categoryId;
+}
