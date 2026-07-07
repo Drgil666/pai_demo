@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 /**
  * 用户操作流水类
- * 分为阅读文章、点赞文章、收藏文章、发表评论、关注用户五种情况
+ * 分为阅读、点赞/取消点赞、收藏/取消收藏、发表/删除评论、关注/取消关注
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -29,41 +29,38 @@ public class UserHistory extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
-     * 操作对应的文章id/评论id/用户id
+     * 操作对应的对象类型
+     */
+    @Column(name = "object_type", nullable = false)
+    private Integer objectType;
+    /**
+     * 操作对应的对象id
      */
     @Column(name = "object_id", nullable = false)
     private Integer objectId;
-
-    @AllArgsConstructor
-    @Getter
-    public enum UserHistoryEnum {
-        /**
-         * 阅读文章
-         */
-        READ(0, "read"),
-        /**
-         * 点赞文章
-         */
-        LIKE(1, "like"),
-        /**
-         * 收藏文章
-         */
-        SUBSCRIBE(2, "subscribe"),
-        /**
-         * 发表评论
-         */
-        COMMENT(3, "comment"),
-        /**
-         * 关注用户
-         */
-        FOLLOW(4, "follow");
-        private final Integer code;
-        private final String name;
-    }
-
     /**
-     * 0-阅读,1-点赞,2-收藏,3-评论
+     * 是否是阅读文章(0-不是,1-是)
      */
-    @Column(name = "type", nullable = false)
-    private UserHistoryEnum type;
+    @Column(name = "is_read", nullable = false)
+    private Integer isRead;
+    /**
+     * 是否是点赞文章(0-不是,1-点赞,2-取消点赞)
+     */
+    @Column(name = "is_like", nullable = false)
+    private Integer isLike;
+    /**
+     * 是否是收藏文章(0-不是,1-收藏,2-取消收藏)
+     */
+    @Column(name = "is_favorite", nullable = false)
+    private Integer isFavorite;
+    /**
+     * 是否是评论文章(0-不是,1-评论,2-删除评论)
+     */
+    @Column(name = "is_comment", nullable = false)
+    private Integer isComment;
+    /**
+     * 是否是关注用户(0-不是,1-关注,2-取消关注)
+     */
+    @Column(name = "is_subcribe", nullable = false)
+    private Integer isSubscribe;
 }
