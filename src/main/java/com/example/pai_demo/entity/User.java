@@ -1,5 +1,6 @@
 package com.example.pai_demo.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,10 +12,15 @@ import javax.persistence.Table;
  * @author GilbertYoung
  * @date 2026/07/06 15:43
  */
+
+/**
+ * 用户类
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "user")
+@ApiModel(value = "用户", description = "用户详细信息")
 public class User extends BaseEntity {
     /**
      * 用户名
