@@ -25,4 +25,9 @@ public class Tag extends BaseEntity {
      */
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+    /**
+     * 标签创建的用户id
+     */
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 }
