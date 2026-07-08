@@ -1,9 +1,7 @@
 package com.example.pai_demo.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,6 +59,6 @@ public class UserHistory extends BaseEntity {
     /**
      * 是否是关注用户(0-不是,1-关注,2-取消关注)
      */
-    @Column(name = "is_subcribe", nullable = false)
+    @Column(name = "is_subscribe", nullable = false)
     private Integer isSubscribe;
 }
