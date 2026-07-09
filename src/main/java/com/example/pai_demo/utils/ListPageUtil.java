@@ -16,7 +16,7 @@ public class ListPageUtil {
     /**
      * 分页上限
      */
-    public static Integer PAGE_SIZE_LIMIT = 100000;
+    public static Integer PAGE_SIZE_LIMIT = 1000;
 
     /**
      * 创建分页

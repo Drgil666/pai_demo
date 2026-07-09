@@ -1,12 +1,19 @@
 package com.example.pai_demo.controller;
 
-import io.swagger.annotations.Api;
+import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.vo.Response;
+import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.service.UserService;
+import com.example.pai_demo.utils.ListPageUtil;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static com.example.pai_demo.utils.errorDict.*;
 
 /**
  * @author GilbertYoung
@@ -17,6 +24,67 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/user")
 public class UserController {
+    @Resource
+    private UserService userService;
+
+    @PostMapping()
+    @ApiOperation(value = "创建用户", notes = "创建用户")
+    public Response<User> createUser(@RequestBody User user) {
+        if (userService.getUserByUsername(user.getUsername()) != null) {
+            return Response.createErr(EXIST_USERNAME_ERROR);
+        }
+        userService.createUser(user);
+        if (user.getId() != null) {
+            return Response.createSuc(user);
+        } else {
+            return Response.createErr(CREATE_USER_ERROR);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public Response<User> updateUserSelective(@PathVariable(name = "id") Integer id,
+                                              @RequestBody User user) {
+        user.setId(id);
+        if (userService.updateUserSelective(user) == 1) {
+            return Response.createSuc(user);
+        } else {
+            return Response.createErr(UPDATE_USER_ERROR);
+        }
+    }
+
+    @PostMapping("/{id}")
+    public Response<User> updateUserAll(@PathVariable(name = "id") Integer id,
+                                        @RequestBody User user) {
+        user.setId(id);
+        if (userService.updateUserAll(user) == 1) {
+            return Response.createSuc(user);
+        } else {
+            return Response.createErr(UPDATE_USER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public Response<User> getUserById(@PathVariable(name = "id") Integer id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            return Response.createSuc(user);
+        } else {
+            return Response.createErr(GET_USER_ERROR);
+        }
+    }
+
+    @GetMapping()
+    public Response<ReturnPage<User>> getUserListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                           @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                           @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+
+        ListPageUtil.paging(current, pageSize, sorter);
+        List<User> userList = userService.getUserListByKeyword(keyword);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+        ReturnPage<User> returnPage = ListPageUtil.returnPage(pageInfo);
+        return Response.createSuc(returnPage);
+    }
 
     @ApiOperation(value = "测试接口", notes = "测试接口")
     @GetMapping("/check")
