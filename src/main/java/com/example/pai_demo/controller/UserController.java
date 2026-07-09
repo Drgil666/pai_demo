@@ -50,6 +50,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
+    @ApiOperation(value = "增量更新用户", notes = "增量更新用户")
     public Response<User> updateUserSelective(@PathVariable(name = "id") Integer id,
                                               @RequestBody User user) {
         if (userService.getUserById(id) == null) {
@@ -64,6 +65,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}")
+    @ApiOperation(value = "全量更新用户", notes = "全量更新用户")
     public Response<User> updateUserAll(@PathVariable(name = "id") Integer id,
                                         @RequestBody User user) {
         if (userService.getUserById(id) == null) {
@@ -78,6 +80,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "根据id获取用户", notes = "根据id获取用户")
     public Response<User> getUserById(@PathVariable(name = "id") Integer id) {
         User user = userService.getUserById(id);
         if (user != null) {
@@ -88,6 +91,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @ApiOperation(value = "根据昵称查询用户列表", notes = "根据昵称查询用户列表")
     public Response<ReturnPage<User>> getUserListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                            @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -101,6 +105,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "登录", notes = "登录")
     public Response<LoginUserVO> login(@RequestBody LoginVO loginVO) {
         if (loginVO.getUsername() == null || loginVO.getPassword() == null) {
             return Response.createErr(EMPTY_USERNAME_OR_PASSWORD_ERROR);

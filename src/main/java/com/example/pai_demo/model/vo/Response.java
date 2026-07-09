@@ -1,5 +1,6 @@
 package com.example.pai_demo.model.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,8 +11,20 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Response<T> {
+    /**
+     * 请求码
+     */
+    @ApiModelProperty(value = "请求码")
     private Integer code;
+    /**
+     * 错误信息
+     */
+    @ApiModelProperty(value = "错误信息")
     private String msg;
+    /**
+     * 返回数据
+     */
+    @ApiModelProperty(value = "返回数据")
     private T data;
 
     public static <T> Response<T> createSuc(T o) {

@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class BaseEntity implements Serializable {
     /**
      * 自增长主键
      */
+    @ApiModelProperty(value = "自增长主键")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "int comment '主键id'")
@@ -27,16 +29,19 @@ public class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @Column(name = "create_time", columnDefinition = "datetime comment '创建时间'")
     private Date createTime;
     /**
      * 更新时间
      */
+    @ApiModelProperty(value = "更新时间")
     @Column(name = "update_time", columnDefinition = "datetime comment '更新时间'")
     private Date updateTime;
     /**
      * 是否已经删除(0-未删除,1-已删除)
      */
+    @ApiModelProperty(value = "是否已经删除(0-未删除,1-已删除)")
     @Column(name = "isDelete", nullable = false, columnDefinition = "int default '0' comment '是否已删除'")
     private Integer isDelete;
 }

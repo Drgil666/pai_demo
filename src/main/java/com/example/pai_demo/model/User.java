@@ -26,27 +26,31 @@ public class User extends BaseEntity {
     /**
      * 用户名
      */
-    @ApiModelProperty(value = "分页、排序完的数据", name = "data", required = true)
+    @ApiModelProperty(value = "用户名")
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     /**
      * 密码
      */
+    @ApiModelProperty(value = "密码")
     @Column(name = "password", nullable = false)
     private String password;
     /**
      * 用户昵称
      */
+    @ApiModelProperty(value = "用户昵称")
     @Column(name = "nick", nullable = false)
     private String nick;
     /**
      * 权限(0-管理员,1-普通用户)
      */
+    @ApiModelProperty(value = "权限(0-管理员,1-普通用户)")
     @Column(name = "privilege", nullable = false, columnDefinition = "int default '0' comment '权限'")
     private Integer privilege;
     /**
      * 用户头像对应的MongoId
      */
+    @ApiModelProperty(value = "用户头像对应的MongoId")
     @Column(name = "avatar")
     private String avatar;
 }

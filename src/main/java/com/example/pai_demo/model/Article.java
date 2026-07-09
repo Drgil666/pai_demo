@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,16 +24,19 @@ public class Article extends BaseEntity {
     /**
      * 文章名称
      */
+    @ApiModelProperty(value = "文章名称")
     @Column(name = "title", nullable = false)
     private String title;
     /**
      * 文章发布的用户id
      */
+    @ApiModelProperty(value = "文章发布的用户id")
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
      * 文章对应的合集id
      */
+    @ApiModelProperty(value = "文章对应的合集id")
     @Column(name = "catagory_id")
     private Integer categoryId;
 }

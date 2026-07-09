@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,11 +24,13 @@ public class Tag extends BaseEntity {
     /**
      * 标签名称
      */
+    @ApiModelProperty(value = "标签名称")
     @Column(name = "name", nullable = false, unique = true)
     private String name;
     /**
      * 标签创建的用户id
      */
+    @ApiModelProperty(value = "标签创建的用户id")
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 }

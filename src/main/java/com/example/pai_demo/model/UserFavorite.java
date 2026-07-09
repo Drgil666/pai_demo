@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,11 +24,13 @@ public class UserFavorite extends BaseEntity {
     /**
      * 用户id
      */
+    @ApiModelProperty(value = "用户id")
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
      * 收藏的文章id
      */
+    @ApiModelProperty(value = "收藏的文章id")
     @Column(name = "article_id", nullable = false)
     private Integer articleId;
 }

@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,26 +27,31 @@ public class Comment extends BaseEntity {
     /**
      * 评论对应的文章id
      */
+    @ApiModelProperty(value = "评论对应的文章id")
     @Column(name = "article_id", nullable = false)
     private Integer articleId;
     /**
      * 评论对应的用户id
      */
+    @ApiModelProperty(value = "评论对应的用户id")
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
      * 评论内容
      */
+    @ApiModelProperty(value = "评论内容")
     @Column(name = "content", nullable = false)
     private String content;
     /**
      * 评论对应的顶级id
      */
+    @ApiModelProperty(value = "评论对应的顶级id")
     @Column(name = "top_comment_id", nullable = false)
     private Integer topCommentId;
     /**
      * 评论对应的上级id
      */
+    @ApiModelProperty(value = "评论对应的上级id")
     @Column(name = "parent_comment_id", nullable = false)
     private Integer parentCommentId;
 }

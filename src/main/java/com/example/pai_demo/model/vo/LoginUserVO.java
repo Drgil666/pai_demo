@@ -1,10 +1,6 @@
 package com.example.pai_demo.model.vo;
 
-/**
- * @author GilbertYoung
- * @date 2026/07/09 17:58
- */
-
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -15,9 +11,11 @@ public class LoginUserVO {
     /**
      * 用户权限
      */
+    @ApiModelProperty(value = "用户权限")
     private Integer privilege;
     /**
      * 用户token
      */
+    @ApiModelProperty(value = "用户token")
     private String token;
 }

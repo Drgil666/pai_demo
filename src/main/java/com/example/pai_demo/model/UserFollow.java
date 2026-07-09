@@ -1,10 +1,6 @@
 package com.example.pai_demo.model;
 
-/**
- * @author GilbertYoung
- * @date 2026/07/06 17:06
- */
-
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,11 +19,13 @@ public class UserFollow extends BaseEntity {
     /**
      * 用户id
      */
+    @ApiModelProperty(value = "用户id")
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
      * 关注的用户id
      */
+    @ApiModelProperty(value = "关注的用户id")
     @Column(name = "follow_id", nullable = false)
     private Integer followId;
 }
