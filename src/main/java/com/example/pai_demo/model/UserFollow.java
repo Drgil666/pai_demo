@@ -1,4 +1,4 @@
-package com.example.pai_demo.entity;
+package com.example.pai_demo.model;
 
 /**
  * @author GilbertYoung
@@ -7,7 +7,6 @@ package com.example.pai_demo.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.mongodb.repository.CountQuery;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

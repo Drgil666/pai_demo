@@ -1,4 +1,4 @@
-package com.example.pai_demo.entity;
+package com.example.pai_demo.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,24 +9,24 @@ import javax.persistence.Table;
 
 /**
  * @author GilbertYoung
- * @date 2026/07/06 16:52
+ * @date 2026/07/06 16:58
  */
 
 /**
- * 文章所属分类
+ * 文章标签
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name = "catagory")
-public class Category extends BaseEntity {
+@Table(name = "tag")
+public class Tag extends BaseEntity {
     /**
-     * 分类名
+     * 标签名称
      */
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
     /**
-     * 分类的创建者
+     * 标签创建的用户id
      */
     @Column(name = "user_id", nullable = false)
     private Integer userId;

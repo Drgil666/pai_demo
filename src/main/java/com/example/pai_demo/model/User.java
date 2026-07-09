@@ -1,6 +1,7 @@
-package com.example.pai_demo.entity;
+package com.example.pai_demo.model;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,6 +26,7 @@ public class User extends BaseEntity {
     /**
      * 用户名
      */
+    @ApiModelProperty(value = "分页、排序完的数据", name = "data", required = true)
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     /**
@@ -32,6 +34,11 @@ public class User extends BaseEntity {
      */
     @Column(name = "password", nullable = false)
     private String password;
+    /**
+     * 用户昵称
+     */
+    @Column(name = "nick", nullable = false)
+    private String nick;
     /**
      * 权限(0-管理员,1-普通用户)
      */

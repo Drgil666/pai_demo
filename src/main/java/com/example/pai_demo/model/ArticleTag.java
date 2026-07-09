@@ -1,4 +1,4 @@
-package com.example.pai_demo.entity;
+package com.example.pai_demo.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
