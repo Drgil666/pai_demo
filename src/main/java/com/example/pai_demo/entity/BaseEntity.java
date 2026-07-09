@@ -34,4 +34,9 @@ public class BaseEntity implements Serializable {
      */
     @Column(name = "update_time", columnDefinition = "datetime comment '更新时间'")
     private Date updateTime;
+    /**
+     * 是否已经删除(0-未删除,1-已删除)
+     */
+    @Column(name = "isDelete", nullable = false)
+    private Integer isDelete;
 }
