@@ -37,6 +37,6 @@ public class BaseEntity implements Serializable {
     /**
      * 是否已经删除(0-未删除,1-已删除)
      */
-    @Column(name = "isDelete", nullable = false)
+    @Column(name = "isDelete", nullable = false, columnDefinition = "int default '0' comment '是否已删除'")
     private Integer isDelete;
 }
