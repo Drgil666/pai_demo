@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "redis.expire.time",
+      "type": "java.lang.Long",
+      "description": "Description for redis.expire.time."
+  }
+] }

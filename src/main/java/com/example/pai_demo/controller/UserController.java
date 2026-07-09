@@ -1,13 +1,17 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.vo.LoginUserVO;
+import com.example.pai_demo.model.vo.LoginVO;
 import com.example.pai_demo.model.vo.Response;
 import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserService;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -26,6 +30,10 @@ import static com.example.pai_demo.utils.errorDict.*;
 public class UserController {
     @Resource
     private UserService userService;
+    @Resource
+    private PasswordEncoder passwordEncoder;
+    @Resource
+    private TokenService tokenService;
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
@@ -90,6 +98,26 @@ public class UserController {
         PageInfo<User> pageInfo = new PageInfo<>(userList);
         ReturnPage<User> returnPage = ListPageUtil.returnPage(pageInfo);
         return Response.createSuc(returnPage);
+    }
+
+    @PostMapping("/login")
+    public Response<LoginUserVO> login(@RequestBody LoginVO loginVO) {
+        if (loginVO.getUsername() == null || loginVO.getPassword() == null) {
+            return Response.createErr(EMPTY_USERNAME_OR_PASSWORD_ERROR);
+        }
+        User user = userService.getUserByUsername(loginVO.getUsername());
+        if (user == null) {
+            return Response.createErr(USER_NOT_EXIST_ERROR);
+        }
+        if (passwordEncoder.matches(loginVO.getPassword(), user.getPassword())) {
+            String token = tokenService.generateToken(user.getId());
+            LoginUserVO loginUserVO = new LoginUserVO();
+            loginUserVO.setPrivilege(user.getPrivilege());
+            loginUserVO.setToken(token);
+            return Response.createSuc(loginUserVO);
+        } else {
+            return Response.createErr(LOGIN_ERROR);
+        }
     }
 
     @ApiOperation(value = "测试接口", notes = "测试接口")
