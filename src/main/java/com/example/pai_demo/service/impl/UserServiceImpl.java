@@ -1,9 +1,11 @@
 package com.example.pai_demo.service.impl;
 
-import com.example.pai_demo.model.User;
 import com.example.pai_demo.mapper.UserMapper;
+import com.example.pai_demo.model.User;
 import com.example.pai_demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,6 +21,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 创建用户
@@ -29,6 +33,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean createUser(User user) {
         //TODO:做一次密码加密
+        String encryptPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptPassword);
         user.setCreateTime(new Date());
         user.setUpdateTime(user.getCreateTime());
         return userMapper.createUser(user);
@@ -42,6 +48,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Long updateUserSelective(User user) {
+        if (user.getPassword() != null) {
+            String encryptPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encryptPassword);
+        }
         user.setUpdateTime(new Date());
         return userMapper.updateUserSelective(user);
     }
@@ -54,6 +64,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Long updateUserAll(User user) {
+        String encryptPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptPassword);
         user.setUpdateTime(new Date());
         return userMapper.updateUserAll(user);
     }

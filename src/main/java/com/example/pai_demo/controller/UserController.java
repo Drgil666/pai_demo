@@ -44,6 +44,9 @@ public class UserController {
     @PatchMapping("/{id}")
     public Response<User> updateUserSelective(@PathVariable(name = "id") Integer id,
                                               @RequestBody User user) {
+        if (userService.getUserById(id) == null) {
+            return Response.createErr(USER_NOT_EXIST_ERROR);
+        }
         user.setId(id);
         if (userService.updateUserSelective(user) == 1) {
             return Response.createSuc(user);
@@ -55,6 +58,9 @@ public class UserController {
     @PostMapping("/{id}")
     public Response<User> updateUserAll(@PathVariable(name = "id") Integer id,
                                         @RequestBody User user) {
+        if (userService.getUserById(id) == null) {
+            return Response.createErr(USER_NOT_EXIST_ERROR);
+        }
         user.setId(id);
         if (userService.updateUserAll(user) == 1) {
             return Response.createSuc(user);
@@ -69,7 +75,7 @@ public class UserController {
         if (user != null) {
             return Response.createSuc(user);
         } else {
-            return Response.createErr(GET_USER_ERROR);
+            return Response.createErr(USER_NOT_EXIST_ERROR);
         }
     }
 
