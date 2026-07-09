@@ -107,7 +107,7 @@ public class UserController {
         }
         User user = userService.getUserByUsername(loginVO.getUsername());
         if (user == null) {
-            return Response.createErr(USER_NOT_EXIST_ERROR);
+            return Response.createErr(LOGIN_ERROR);
         }
         if (passwordEncoder.matches(loginVO.getPassword(), user.getPassword())) {
             String token = tokenService.generateToken(user.getId());
