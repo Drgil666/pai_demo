@@ -35,7 +35,7 @@ public class User extends BaseEntity {
     /**
      * 权限(0-管理员,1-普通用户)
      */
-    @Column(name = "privilege", nullable = false, columnDefinition = "varchar default '0' comment '权限'")
+    @Column(name = "privilege", nullable = false, columnDefinition = "int default '0' comment '权限'")
     private Integer privilege;
     /**
      * 用户头像对应的MongoId
