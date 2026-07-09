@@ -7,6 +7,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.Data;
 
+import static com.example.pai_demo.utils.errorDict.CURRENT_ERROR;
+import static com.example.pai_demo.utils.errorDict.PAGESIZE_ERROR;
+
 /**
  * @author Gilbert
  * @date 2020/11/14 16:48
@@ -30,8 +33,8 @@ public class ListPageUtil {
             current = 1;
             pageSize = PAGE_SIZE_LIMIT;
         }
-        AssertionUtil.notNull(current, ErrorCode.BIZ_PARAM_ILLEGAL, "current参数错误!");
-        AssertionUtil.notNull(pageSize, ErrorCode.BIZ_PARAM_ILLEGAL, "pageSize参数错误!");
+        AssertionUtil.notNull(current, ErrorCode.BIZ_PARAM_ILLEGAL, CURRENT_ERROR);
+        AssertionUtil.notNull(pageSize, ErrorCode.BIZ_PARAM_ILLEGAL, PAGESIZE_ERROR);
         if (sorter != null) {
             sorter = OrderToolUtil.toOrderString(sorter);
             PageHelper.startPage(current, pageSize, sorter);

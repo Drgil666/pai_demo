@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.example.pai_demo.utils.errorDict.SORTER_ERROR;
+
 /**
  * @author Gilbert
  * @date 2020/8/16 18:19
@@ -32,7 +34,7 @@ public class OrderToolUtil {
         String[] sorterSet = s.split(";");
         for (String sorter : sorterSet) {
             String[] entry = sorter.split(":");
-            AssertionUtil.isTrue(entry.length == 2, ErrorCode.BIZ_PARAM_ILLEGAL, "sorter参数非法");
+            AssertionUtil.isTrue(entry.length == 2, ErrorCode.BIZ_PARAM_ILLEGAL, SORTER_ERROR);
             String key = entry[0];
             String value = entry[1];
             map.put(key, value);
@@ -51,7 +53,7 @@ public class OrderToolUtil {
         try {
             sorter = JSONObject.parseObject(s, SORTER_TYPE);
         } catch (JSONException e) {
-            throw new ErrorException(ErrorCode.BIZ_PARAM_ILLEGAL, "Sorter参数不合法!");
+            throw new ErrorException(ErrorCode.BIZ_PARAM_ILLEGAL, SORTER_ERROR);
         }
         StringBuilder orderBy = new StringBuilder();
         for (Map.Entry<String, String> entry : sorter.entrySet()) {
