@@ -56,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
     public Integer getUserIdByToken(String token) {
         String value1 = tokenDao.getValue("login:token:" + token);
         RedisUserVO redisUserVO = JSONObject.toJavaObject(JSONObject.parseObject(value1), RedisUserVO.class);
-        if (redisUserVO != null) {
+        if (redisUserVO == null) {
             throw new ErrorException(ErrorCode.TOKEN_AUTHORIZE_ILLEGAL, GET_TOKEN_ERROR);
         }
         Integer userId = redisUserVO.getUserId();
