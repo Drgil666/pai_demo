@@ -29,12 +29,6 @@ public class UserHistory extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
     /**
-     * 操作对应的对象类型
-     */
-    @ApiModelProperty(value = "操作对应的对象类型")
-    @Column(name = "object_type", nullable = false)
-    private Integer objectType;
-    /**
      * 操作对应的对象id
      */
     @ApiModelProperty(value = "操作对应的对象id")
@@ -70,4 +64,12 @@ public class UserHistory extends BaseEntity {
     @ApiModelProperty(value = "是否是关注用户(0-不是,1-关注,2-取消关注)")
     @Column(name = "is_subscribe", nullable = false)
     private Integer isSubscribe;
+
+    public UserHistory() {
+        this.isComment = 0;
+        this.isFavorite = 0;
+        this.isLike = 0;
+        this.isRead = 0;
+        this.isSubscribe = 0;
+    }
 }

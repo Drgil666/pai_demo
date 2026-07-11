@@ -44,4 +44,10 @@ public class BaseEntity implements Serializable {
     @ApiModelProperty(value = "是否已经删除(0-未删除,1-已删除)")
     @Column(name = "isDelete", nullable = false, columnDefinition = "int default '0' comment '是否已删除'")
     private Integer isDelete;
+
+    public BaseEntity() {
+        this.createTime = new Date();
+        this.updateTime = this.createTime;
+        this.isDelete = 0;
+    }
 }

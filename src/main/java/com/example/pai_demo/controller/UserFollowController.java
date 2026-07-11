@@ -8,6 +8,7 @@ import com.example.pai_demo.model.vo.Response;
 import com.example.pai_demo.model.vo.ReturnPage;
 import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserFollowService;
+import com.example.pai_demo.service.UserHistoryService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
@@ -33,6 +34,8 @@ public class UserFollowController {
     private UserFollowService userFollowService;
     @Resource
     private TokenService tokenService;
+    @Resource
+    private UserHistoryService userHistoryService;
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
@@ -47,7 +50,7 @@ public class UserFollowController {
             userHistory.setUserId(userFollow.getUserId());
             userHistory.setObjectId(userFollow.getFollowId());
             userHistory.setIsSubscribe(1);
-            //TODO:创建用户操作流水历史
+            userHistoryService.createUserHistory(userHistory);
             return Response.createSuc(userFollow);
         } else {
             return Response.createErr(CREATE_USER_FOLLOW_ERROR);
@@ -63,6 +66,12 @@ public class UserFollowController {
         }
         userFollow.setId(id);
         if (userFollowService.updateUserFollowSelective(userFollow) == 1) {
+            UserFollow newUserFollow = userFollowService.getUserFollowById(id);
+            UserHistory userHistory = new UserHistory();
+            userHistory.setUserId(newUserFollow.getUserId());
+            userHistory.setObjectId(newUserFollow.getFollowId());
+            userHistory.setIsSubscribe(2);
+            userHistoryService.createUserHistory(userHistory);
             return Response.createSuc(userFollow);
         } else {
             return Response.createErr(UPDATE_ERROR);
