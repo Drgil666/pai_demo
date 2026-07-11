@@ -37,7 +37,7 @@ public interface UserMapper {
      * @return 是否更新成功
      */
     @Update("update user set password=#{user.password},avatar=#{user.avatar}," +
-            "privilege=#{user.privilege},nick=#{user.nick},update_time=#{user.updateTime} where id=#{user.id} and is_delete=0")
+            "privilege=#{user.privilege},user.is_delete=#{user.isDelete},nick=#{user.nick},update_time=#{user.updateTime} where id=#{user.id}")
     Long updateUserAll(@Param("user") User user);
 
     /**

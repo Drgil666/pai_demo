@@ -18,4 +18,9 @@ public class LoginUserVO {
      */
     @ApiModelProperty(value = "用户token")
     private String token;
+    /**
+     * 用户id
+     */
+    @ApiModelProperty(value = "用户id")
+    private Integer userId;
 }

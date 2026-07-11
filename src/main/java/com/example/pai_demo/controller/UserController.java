@@ -39,7 +39,7 @@ public class UserController {
     @ApiOperation(value = "创建用户", notes = "创建用户")
     public Response<User> createUser(@RequestBody User user) {
         if (userService.getUserByUsername(user.getUsername()) != null) {
-            return Response.createErr(EXIST_USERNAME_ERROR);
+            return Response.createErr(USERNAME_EXIST_ERROR);
         }
         userService.createUser(user);
         if (user.getId() != null) {
@@ -60,7 +60,7 @@ public class UserController {
         if (userService.updateUserSelective(user) == 1) {
             return Response.createSuc(user);
         } else {
-            return Response.createErr(UPDATE_USER_ERROR);
+            return Response.createErr(UPDATE_ERROR);
         }
     }
 
@@ -75,7 +75,7 @@ public class UserController {
         if (userService.updateUserAll(user) == 1) {
             return Response.createSuc(user);
         } else {
-            return Response.createErr(UPDATE_USER_ERROR);
+            return Response.createErr(UPDATE_ERROR);
         }
     }
 
@@ -119,6 +119,7 @@ public class UserController {
             LoginUserVO loginUserVO = new LoginUserVO();
             loginUserVO.setPrivilege(user.getPrivilege());
             loginUserVO.setToken(token);
+            loginUserVO.setUserId(user.getId());
             return Response.createSuc(loginUserVO);
         } else {
             return Response.createErr(LOGIN_ERROR);

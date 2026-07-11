@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
         String encryptPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptPassword);
         user.setCreateTime(new Date());
+        user.setIsDelete(0);
         user.setUpdateTime(user.getCreateTime());
         return userMapper.createUser(user);
     }

@@ -13,6 +13,9 @@
             <if test="user.nick != null">
                 nick = #{user.nick},
             </if>
+            <if test="user.isDelete != null">
+                is_delete = #{user.isDelete},
+            </if>
             <if test="user.privilege != null">
                 privilege = #{user.privilege},
             </if>
@@ -20,7 +23,7 @@
                 update_time = #{user.updateTime},
             </if>
         </set>
-        WHERE id = #{user.id} and is_delete=0
+        WHERE id = #{user.id}
     </update>
 </mapper>
 
