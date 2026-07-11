@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.UserFollowMapper">
+    <update id="updateUserFollowSelective">
+        UPDATE `user_follow`
+        <set>
+            <if test="userFollow.userId != null">
+                user_id = #{userFollow.userId},
+            </if>
+            <if test="userFollow.followId != null">
+                follow_id = #{userFollow.followId},
+            </if>
+            <if test="userFollow.isDelete != null">
+                is_delete = #{userFollow.isDelete},
+            </if>
+            <if test="userFollow.updateTime != null">
+                update_time = #{userFollow.updateTime},
+            </if>
+        </set>
+        WHERE id = #{userFollow.id}
+    </update>
+</mapper>
+
