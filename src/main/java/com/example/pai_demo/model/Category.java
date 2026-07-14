@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name = "catagory")
+@Table(name = "category")
 public class Category extends BaseEntity {
     /**
      * 分类名
