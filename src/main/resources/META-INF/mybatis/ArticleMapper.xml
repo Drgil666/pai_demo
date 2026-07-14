@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.ArticleMapper">
+    <update id="updateArticleSelective">
+        UPDATE article
+        <set>
+            <if test="article.categoryId != null">
+                category_id = #{article.categoryId},
+            </if>
+            <if test="article.title != null">
+                title = #{article.title},
+            </if>
+            <if test="article.userId != null">
+                user_id = #{article.userId},
+            </if>
+            <if test="article.isDelete != null">
+                is_delete = #{article.isDelete},
+            </if>
+            <if test="article.updateTime != null">
+                update_time = #{article.updateTime},
+            </if>
+        </set>
+        WHERE id = #{article.id} and is_delete=0
+    </update>
+</mapper>
+

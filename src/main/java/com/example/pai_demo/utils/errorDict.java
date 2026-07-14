@@ -26,6 +26,12 @@ public class errorDict {
     public static final String USER_FOLLOW_EXIST_ERROR = "该用户已关注！";
     public static final String USER_FOLLOW_NOT_EXIST_ERROR = "该用户关注不存在！";
     public static final String CREATE_USER_FOLLOW_ERROR = "关注失败！";
+    //Article相关
+    public static final String CREATE_ARTICLE_ERROR = "创建文章失败！";
+    public static final String ARTICLE_NOT_EXIST_ERROR = "文章不存在！";
+    //Category相关
+    public static final String CREATE_CATEGORY_ERROR = "创建目录失败！";
+    public static final String CATEGORY_NOT_EXIST_ERROR = "目录不存在！";
     //通用相关
     public static final String ID_NULL_ERROR = "id不可为空！";
     public static final String UPDATE_ERROR = "更新失败！";

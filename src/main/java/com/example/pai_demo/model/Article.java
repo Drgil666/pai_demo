@@ -31,12 +31,12 @@ public class Article extends BaseEntity {
      * 文章发布的用户id
      */
     @ApiModelProperty(value = "文章发布的用户id")
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Integer userId;
     /**
      * 文章对应的合集id
      */
     @ApiModelProperty(value = "文章对应的合集id")
-    @Column(name = "catagory_id")
+    @Column(name = "category_id")
     private Integer categoryId;
 }
