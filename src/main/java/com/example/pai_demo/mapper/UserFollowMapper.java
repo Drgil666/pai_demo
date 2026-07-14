@@ -59,6 +59,6 @@ public interface UserFollowMapper {
      * @return 关注用户列表
      */
     @Select("select `user`.* from user_follow left join `user` on user_follow.follow_id=`user`.id " +
-            "where user_follow.user_id=#{id} and user.nick like CONCAT('%',#{keyword},'%')")
+            "where user_follow.user_id=#{id} and user_follow.is_delete=0 and user.nick like CONCAT('%',#{keyword},'%')")
     List<User> getFollowUserListByUserId(@Param("id") Integer id, @Param("keyword") String keyword);
 }
