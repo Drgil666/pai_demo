@@ -72,7 +72,7 @@ public class UserFollowController {
             userHistory.setObjectId(newUserFollow.getFollowId());
             userHistory.setIsSubscribe(2);
             userHistoryService.createUserHistory(userHistory);
-            return Response.createSuc(userFollow);
+            return Response.createSuc(userFollowService.getUserFollowById(id));
         } else {
             return Response.createErr(UPDATE_ERROR);
         }

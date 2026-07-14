@@ -17,7 +17,7 @@
                 update_time = #{userFollow.updateTime},
             </if>
         </set>
-        WHERE id = #{userFollow.id}
+        WHERE id = #{userFollow.id} and is_delete=0
     </update>
 </mapper>
 
