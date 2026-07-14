@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.TagMapper">
+    <update id="updateTagSelective">
+        UPDATE `tag`
+        <set>
+            <if test="tag.name != null">
+                name = #{tag.name},
+            </if>
+            <if test="tag.userId != null">
+                user_id = #{tag.userId},
+            </if>
+            <if test="tag.isDelete != null">
+                is_delete = #{tag.isDelete},
+            </if>
+            <if test="tag.updateTime != null">
+                update_time = #{tag.updateTime},
+            </if>
+        </set>
+        WHERE id = #{tag.id} and is_delete=0
+    </update>
+</mapper>

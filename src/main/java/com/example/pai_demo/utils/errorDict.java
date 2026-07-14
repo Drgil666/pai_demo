@@ -32,11 +32,15 @@ public class errorDict {
     //Category相关
     public static final String CREATE_CATEGORY_ERROR = "创建目录失败！";
     public static final String CATEGORY_NOT_EXIST_ERROR = "目录不存在！";
+    //Tag相关
+    public static final String CREATE_TAG_ERROR = "创建标签失败！";
+    public static final String TAG_NAME_EXIST_ERROR = "标签名已存在！";
+    public static final String TAG_NAME_NULL_ERROR = "标签名不可为空！";
+    public static final String TAG_NOT_EXIST_ERROR = "标签不存在！";
     //UserFavorite相关
     public static final String CREATE_USER_FAVORITE_ERROR = "收藏失败！";
     public static final String USER_FAVORITE_NOT_EXIST_ERROR = "未收藏该文章！";
     public static final String USER_FAVORITE_EXIST_ERROR = "该文章已收藏！";
-
     //通用相关
     public static final String ID_NULL_ERROR = "id不可为空！";
     public static final String UPDATE_ERROR = "更新失败！";
