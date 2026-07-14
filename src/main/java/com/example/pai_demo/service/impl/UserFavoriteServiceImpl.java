@@ -29,6 +29,7 @@ public class UserFavoriteServiceImpl implements UserFavoriteService {
      */
     @Override
     public Boolean createUserFavorite(UserFavorite userFavorite) {
+        userFavorite.setIsDelete(0);
         userFavorite.setCreateTime(new Date());
         userFavorite.setUpdateTime(userFavorite.getCreateTime());
         return userFavoriteMapper.createUserFavorite(userFavorite);

@@ -28,6 +28,7 @@ public class UserHistoryServiceImpl implements UserHistoryService {
      */
     @Override
     public Boolean createUserHistory(UserHistory userHistory) {
+        userHistory.setIsDelete(0);
         userHistory.setCreateTime(new Date());
         userHistory.setUpdateTime(userHistory.getCreateTime());
         return userHistoryMapper.createUserHistory(userHistory);
