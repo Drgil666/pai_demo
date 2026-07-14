@@ -58,7 +58,7 @@ public class UserController {
         }
         user.setId(id);
         if (userService.updateUserSelective(user) == 1) {
-            return Response.createSuc(user);
+            return Response.createSuc(userService.getUserById(id));
         } else {
             return Response.createErr(UPDATE_ERROR);
         }
@@ -73,7 +73,7 @@ public class UserController {
         }
         user.setId(id);
         if (userService.updateUserAll(user) == 1) {
-            return Response.createSuc(user);
+            return Response.createSuc(userService.getUserById(id));
         } else {
             return Response.createErr(UPDATE_ERROR);
         }

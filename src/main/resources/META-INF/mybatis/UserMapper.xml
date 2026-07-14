@@ -23,7 +23,7 @@
                 update_time = #{user.updateTime},
             </if>
         </set>
-        WHERE id = #{user.id}
+        WHERE id = #{user.id} and is_delete=0
     </update>
 </mapper>
 

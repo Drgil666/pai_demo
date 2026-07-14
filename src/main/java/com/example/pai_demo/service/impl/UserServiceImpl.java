@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean createUser(User user) {
-        //TODO:做一次密码加密
         String encryptPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptPassword);
         user.setCreateTime(new Date());
