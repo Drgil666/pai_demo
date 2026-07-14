@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.UserFavoriteMapper">
+    <update id="updateUserFavoriteSelective">
+        UPDATE user_favorite
+        <set>
+            <if test="userFavorite.articleId != null">
+                article_id = #{userFavorite.articleId},
+            </if>
+            <if test="userFavorite.userId != null">
+                user_id = #{userFavorite.userId},
+            </if>
+            <if test="userFavorite.isDelete != null">
+                is_delete = #{userFavorite.isDelete},
+            </if>
+            <if test="userFavorite.updateTime != null">
+                update_time = #{userFavorite.updateTime},
+            </if>
+        </set>
+        WHERE id = #{userFavorite.id} and is_delete=0
+    </update>
+</mapper>
+
