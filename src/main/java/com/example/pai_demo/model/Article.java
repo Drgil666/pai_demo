@@ -39,4 +39,10 @@ public class Article extends BaseEntity {
     @ApiModelProperty(value = "文章对应的合集id")
     @Column(name = "category_id")
     private Integer categoryId;
+    /**
+     * 文章审核状态(0表示待审核,1-表示审核通过)
+     */
+    @ApiModelProperty(value = "文章审核状态")
+    @Column(name = "status")
+    private Integer status;
 }

@@ -18,8 +18,8 @@ public interface ArticleMapper {
      * @return 是否创建成功
      */
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("insert into article (create_time, update_time, category_id, title, user_id, is_delete) " +
-            "values (#{article.createTime},#{article.updateTime},#{article.categoryId},#{article.title},#{article.userId},#{article.isDelete})")
+    @Insert("insert into article (create_time, update_time, category_id, title, user_id, is_delete,status) " +
+            "values (#{article.createTime},#{article.updateTime},#{article.categoryId},#{article.title},#{article.userId},#{article.isDelete},#{article.status})")
     Boolean createArticle(@Param("article") Article article);
 
     /**
@@ -38,8 +38,8 @@ public interface ArticleMapper {
      */
     @Update("update article set update_time=#{article.updateTime}," +
             "category_id=#{article.categoryId},title=#{article.title}," +
-            "user_id=#{article.userId},is_delete=#{article.isDelete} " +
-            "where id=#{article.id} and is_delete=0")
+            "user_id=#{article.userId},is_delete=#{article.isDelete}," +
+            "status=#{article.status} where id=#{article.id} and is_delete=0")
     Long updateArticleAll(@Param("article") Article article);
 
     /**

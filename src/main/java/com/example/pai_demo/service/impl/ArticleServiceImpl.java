@@ -29,6 +29,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Boolean createArticle(Article article) {
         article.setIsDelete(0);
+        article.setStatus(0);
         article.setCreateTime(new Date());
         article.setUpdateTime(article.getCreateTime());
         return articleMapper.createArticle(article);

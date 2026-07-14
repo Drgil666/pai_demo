@@ -10,6 +10,9 @@
             <if test="article.title != null">
                 title = #{article.title},
             </if>
+            <if test="article.status != null">
+                status = #{article.status},
+            </if>
             <if test="article.userId != null">
                 user_id = #{article.userId},
             </if>
