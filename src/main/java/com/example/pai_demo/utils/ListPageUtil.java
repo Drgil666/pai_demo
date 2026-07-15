@@ -2,7 +2,7 @@ package com.example.pai_demo.utils;
 
 
 import com.example.pai_demo.exception.ErrorCode;
-import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.Data;
@@ -49,12 +49,12 @@ public class ListPageUtil {
      * @param data 要封装的数据
      * @return 封装好的页面类
      */
-    public static <T> ReturnPage<T> returnPage(PageInfo<T> data) {
-        ReturnPage<T> returnPage = new ReturnPage<>();
-        returnPage.setPageSize(data.getPageSize());
-        returnPage.setCurrent(data.getPageNum());
-        returnPage.setTotal(data.getTotal());
-        returnPage.setData(data.getList());
-        return returnPage;
+    public static <T> ReturnPageVO<T> returnPage(PageInfo<T> data) {
+        ReturnPageVO<T> returnPageVO = new ReturnPageVO<>();
+        returnPageVO.setPageSize(data.getPageSize());
+        returnPageVO.setCurrent(data.getPageNum());
+        returnPageVO.setTotal(data.getTotal());
+        returnPageVO.setData(data.getList());
+        return returnPageVO;
     }
 }

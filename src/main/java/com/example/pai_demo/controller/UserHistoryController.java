@@ -2,8 +2,8 @@ package com.example.pai_demo.controller;
 
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.UserHistory;
-import com.example.pai_demo.model.vo.Response;
-import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.model.vo.ResponseVO;
+import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserHistoryService;
 import com.example.pai_demo.utils.AssertionUtil;
@@ -34,15 +34,15 @@ public class UserHistoryController {
 
     @GetMapping()
     @ApiOperation(value = "查询用户流水列表", notes = "查询用户流水列表")
-    public Response<ReturnPage<UserHistory>> getFollowUserListByUserId(@RequestParam(value = "userId") Integer userId,
-                                                                       @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                       @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                       @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+    public ResponseVO<ReturnPageVO<UserHistory>> getFollowUserListByUserId(@RequestParam(value = "userId") Integer userId,
+                                                                           @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                           @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(userId, ErrorCode.BIZ_PARAM_ILLEGAL, USER_NOT_EXIST_ERROR);
         ListPageUtil.paging(current, pageSize, sorter);
         List<UserHistory> userList = userHistoryService.getUserHistoryList(userId);
         PageInfo<UserHistory> pageInfo = new PageInfo<>(userList);
-        ReturnPage<UserHistory> returnPage = ListPageUtil.returnPage(pageInfo);
-        return Response.createSuc(returnPage);
+        ReturnPageVO<UserHistory> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        return ResponseVO.createSuc(returnPageVO);
     }
 }

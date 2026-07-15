@@ -18,8 +18,8 @@ public interface TagMapper {
      * @return 是否创建成功
      */
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("insert into tag (name,user_id,create_time,update_time) values " +
-            "(#{tag.name},#{tag.userId},#{tag.createTime},#{tag.updateTime})")
+    @Insert("insert into tag (name,user_id,create_time,update_time,is_delete) values " +
+            "(#{tag.name},#{tag.userId},#{tag.createTime},#{tag.updateTime},#{tag.isDelete})")
     Boolean createTag(@Param("tag") Tag tag);
 
     /**

@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class Response<T> {
+public class ResponseVO<T> {
     /**
      * 请求码
      */
@@ -27,19 +27,19 @@ public class Response<T> {
     @ApiModelProperty(value = "返回数据")
     private T data;
 
-    public static <T> Response<T> createSuc(T o) {
-        return new Response<T>(200, null, o);
+    public static <T> ResponseVO<T> createSuc(T o) {
+        return new ResponseVO<T>(200, null, o);
     }
 
-    public static <T> Response<T> createErr(String msg) {
-        return new Response<T>(-1, msg, null);
+    public static <T> ResponseVO<T> createErr(String msg) {
+        return new ResponseVO<T>(-1, msg, null);
     }
 
-    public static <T> Response<T> createErr(int code, String msg) {
-        return new Response<T>(code, msg, null);
+    public static <T> ResponseVO<T> createErr(int code, String msg) {
+        return new ResponseVO<T>(code, msg, null);
     }
 
-    public static <T> Response<T> createTokenAuthorizedErr() {
-        return new Response<>(5, "Token失效或不存在!", null);
+    public static <T> ResponseVO<T> createTokenAuthorizedErr() {
+        return new ResponseVO<>(5, "Token失效或不存在!", null);
     }
 }

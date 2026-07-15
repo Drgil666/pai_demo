@@ -3,7 +3,6 @@ package com.example.pai_demo.model.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "分页插件返回类", description = "分页插件返回类")
-public class ReturnPage<T> {
+public class ReturnPageVO<T> {
     /**
      * 分页、排序完的数据
      */

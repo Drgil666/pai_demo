@@ -3,8 +3,8 @@ package com.example.pai_demo.controller;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.ArticleTag;
 import com.example.pai_demo.model.Tag;
-import com.example.pai_demo.model.vo.Response;
-import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.model.vo.ResponseVO;
+import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.ArticleService;
 import com.example.pai_demo.service.ArticleTagService;
 import com.example.pai_demo.service.TagService;
@@ -38,81 +38,81 @@ public class ArticleTagController {
 
     @PostMapping()
     @ApiOperation(value = "创建文章标签关联", notes = "创建文章标签关联")
-    public Response<ArticleTag> createArticleTag(@RequestBody ArticleTag articleTag) {
-
+    public ResponseVO<ArticleTag> createArticleTag(@RequestBody ArticleTag articleTag) {
+        //TODO:这里改为DTO，批量生成文章标签
         if (articleService.getArticleById(articleTag.getArticleId()) == null) {
-            return Response.createErr(ARTICLE_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
         if (tagService.getTagById(articleTag.getTagId()) == null) {
-            return Response.createErr(TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
         }
         if (articleTagService.getArticleTagByArticleIdAndTagId(articleTag.getArticleId(), articleTag.getTagId()) != null) {
-            return Response.createErr(ARTICLE_TAG_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_TAG_EXIST_ERROR);
         }
         articleTagService.createArticleTag(articleTag);
         if (articleTag.getId() != null) {
-            return Response.createSuc(articleTag);
+            return ResponseVO.createSuc(articleTag);
         } else {
-            return Response.createErr(CREATE_ARTICLE_TAG_ERROR);
+            return ResponseVO.createErr(CREATE_ARTICLE_TAG_ERROR);
         }
     }
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新文章标签关联", notes = "增量更新文章标签关联")
-    public Response<ArticleTag> updateArticleTagSelective(@PathVariable(name = "id") Integer id,
-                                                          @RequestBody ArticleTag articleTag) {
+    public ResponseVO<ArticleTag> updateArticleTagSelective(@PathVariable(name = "id") Integer id,
+                                                            @RequestBody ArticleTag articleTag) {
         if (articleTagService.getArticleTagById(id) == null) {
-            return Response.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
         }
         articleTag.setId(id);
         if (articleTagService.updateArticleTagSelective(articleTag) == 1) {
-            return Response.createSuc(articleTagService.getArticleTagById(id));
+            return ResponseVO.createSuc(articleTagService.getArticleTagById(id));
         } else {
-            return Response.createErr(UPDATE_ERROR);
+            return ResponseVO.createErr(UPDATE_ERROR);
         }
     }
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新文章标签关联", notes = "全量更新文章标签关联")
-    public Response<ArticleTag> updateArticleTagAll(@PathVariable(name = "id") Integer id,
-                                                    @RequestBody ArticleTag articleTag) {
+    public ResponseVO<ArticleTag> updateArticleTagAll(@PathVariable(name = "id") Integer id,
+                                                      @RequestBody ArticleTag articleTag) {
         if (articleTagService.getArticleTagById(id) == null) {
-            return Response.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
         }
         articleTag.setId(id);
         if (articleTagService.updateArticleTagAll(articleTag) == 1) {
-            return Response.createSuc(articleTagService.getArticleTagById(id));
+            return ResponseVO.createSuc(articleTagService.getArticleTagById(id));
         } else {
-            return Response.createErr(UPDATE_ERROR);
+            return ResponseVO.createErr(UPDATE_ERROR);
         }
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取文章标签关联", notes = "根据id获取文章标签关联")
-    public Response<ArticleTag> getArticleTagById(@PathVariable(name = "id") Integer id) {
+    public ResponseVO<ArticleTag> getArticleTagById(@PathVariable(name = "id") Integer id) {
         ArticleTag articleTag = articleTagService.getArticleTagById(id);
         if (articleTag != null) {
-            return Response.createSuc(articleTag);
+            return ResponseVO.createSuc(articleTag);
         } else {
-            return Response.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_TAG_NOT_EXIST_ERROR);
         }
     }
 
     @GetMapping()
     @ApiOperation(value = "根据文章id获取对应的标签列表", notes = "根据文章id获取对应的标签列表")
-    public Response<ReturnPage<Tag>> getTagListByArticleId(@RequestParam("articleId") Integer articleId,
-                                                           @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                           @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                           @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+    public ResponseVO<ReturnPageVO<Tag>> getTagListByArticleId(@RequestParam("articleId") Integer articleId,
+                                                               @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                               @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                               @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                               @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(articleId, ErrorCode.BIZ_PARAM_ILLEGAL, ARTICLE_NOT_EXIST_ERROR);
         if (articleService.getArticleById(articleId) == null) {
-            return Response.createErr(ARTICLE_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
         ListPageUtil.paging(current, pageSize, sorter);
         List<Tag> tagList = articleTagService.getTagListByArticleId(articleId, keyword);
         PageInfo<Tag> pageInfo = new PageInfo<>(tagList);
-        ReturnPage<Tag> returnPage = ListPageUtil.returnPage(pageInfo);
-        return Response.createSuc(returnPage);
+        ReturnPageVO<Tag> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        return ResponseVO.createSuc(returnPageVO);
     }
 }

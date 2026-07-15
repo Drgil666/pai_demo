@@ -2,8 +2,8 @@ package com.example.pai_demo.controller;
 
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Tag;
-import com.example.pai_demo.model.vo.Response;
-import com.example.pai_demo.model.vo.ReturnPage;
+import com.example.pai_demo.model.vo.ResponseVO;
+import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.TagService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
@@ -31,71 +31,77 @@ public class TagController {
 
     @PostMapping()
     @ApiOperation(value = "创建标签", notes = "创建标签")
-    public Response<Tag> createTag(@RequestBody Tag tag) {
+    public ResponseVO<Tag> createTag(@RequestBody Tag tag) {
         AssertionUtil.notNull(tag.getName(), ErrorCode.BIZ_PARAM_ILLEGAL, TAG_NAME_NULL_ERROR);
-        if (tag.getName() != null) {
-            return Response.createErr(TAG_NAME_EXIST_ERROR);
+        if (tagService.getTagByName(tag.getName()) != null) {
+            return ResponseVO.createErr(TAG_NAME_EXIST_ERROR);
         }
         tagService.createTag(tag);
         if (tag.getId() != null) {
-            return Response.createSuc(tag);
+            return ResponseVO.createSuc(tag);
         } else {
-            return Response.createErr(CREATE_TAG_ERROR);
+            return ResponseVO.createErr(CREATE_TAG_ERROR);
         }
     }
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新标签", notes = "增量更新标签")
-    public Response<Tag> updateTagSelective(@PathVariable(name = "id") Integer id,
-                                            @RequestBody Tag tag) {
+    public ResponseVO<Tag> updateTagSelective(@PathVariable(name = "id") Integer id,
+                                              @RequestBody Tag tag) {
         if (tagService.getTagById(id) == null) {
-            return Response.createErr(TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
+        }
+        if (!tagService.getTagByName(tag.getName()).getId().equals(id)) {
+            return ResponseVO.createErr(TAG_NAME_EXIST_ERROR);
         }
         tag.setId(id);
         if (tagService.updateTagSelective(tag) == 1) {
-            return Response.createSuc(tagService.getTagById(id));
+            return ResponseVO.createSuc(tagService.getTagById(id));
         } else {
-            return Response.createErr(UPDATE_ERROR);
+            return ResponseVO.createErr(UPDATE_ERROR);
         }
     }
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新标签", notes = "全量更新标签")
-    public Response<Tag> updateTagAll(@PathVariable(name = "id") Integer id,
-                                      @RequestBody Tag tag) {
+    public ResponseVO<Tag> updateTagAll(@PathVariable(name = "id") Integer id,
+                                        @RequestBody Tag tag) {
         if (tagService.getTagById(id) == null) {
-            return Response.createErr(TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
+        }
+        if (!tagService.getTagByName(tag.getName()).getId().equals(id)) {
+            return ResponseVO.createErr(TAG_NAME_EXIST_ERROR);
         }
         tag.setId(id);
         if (tagService.updateTagAll(tag) == 1) {
-            return Response.createSuc(tagService.getTagById(id));
+            return ResponseVO.createSuc(tagService.getTagById(id));
         } else {
-            return Response.createErr(UPDATE_ERROR);
+            return ResponseVO.createErr(UPDATE_ERROR);
         }
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取标签", notes = "根据id获取标签")
-    public Response<Tag> getTagById(@PathVariable(name = "id") Integer id) {
+    public ResponseVO<Tag> getTagById(@PathVariable(name = "id") Integer id) {
         Tag tag = tagService.getTagById(id);
         if (tag != null) {
-            return Response.createSuc(tag);
+            return ResponseVO.createSuc(tag);
         } else {
-            return Response.createErr(TAG_NOT_EXIST_ERROR);
+            return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
         }
     }
 
     @GetMapping()
     @ApiOperation(value = "根据标签名查询标签列表", notes = "根据标签名查询标签列表")
-    public Response<ReturnPage<Tag>> getTagListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                         @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                         @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+    public ResponseVO<ReturnPageVO<Tag>> getTagListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                             @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                             @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
 
         ListPageUtil.paging(current, pageSize, sorter);
         List<Tag> tagList = tagService.getTagListByKeyword(keyword);
         PageInfo<Tag> pageInfo = new PageInfo<>(tagList);
-        ReturnPage<Tag> returnPage = ListPageUtil.returnPage(pageInfo);
-        return Response.createSuc(returnPage);
+        ReturnPageVO<Tag> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        return ResponseVO.createSuc(returnPageVO);
     }
 }
