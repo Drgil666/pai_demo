@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Tag;
 import com.example.pai_demo.model.vo.ResponseVO;
@@ -31,6 +32,7 @@ public class TagController {
 
     @PostMapping()
     @ApiOperation(value = "创建标签", notes = "创建标签")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Tag> createTag(@RequestBody Tag tag) {
         AssertionUtil.notNull(tag.getName(), ErrorCode.BIZ_PARAM_ILLEGAL, TAG_NAME_NULL_ERROR);
         if (tagService.getTagByName(tag.getName()) != null) {
@@ -46,6 +48,7 @@ public class TagController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新标签", notes = "增量更新标签")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Tag> updateTagSelective(@PathVariable(name = "id") Integer id,
                                               @RequestBody Tag tag) {
         if (tagService.getTagById(id) == null) {
@@ -64,6 +67,7 @@ public class TagController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新标签", notes = "全量更新标签")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Tag> updateTagAll(@PathVariable(name = "id") Integer id,
                                         @RequestBody Tag tag) {
         if (tagService.getTagById(id) == null) {

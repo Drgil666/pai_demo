@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Category;
@@ -42,6 +43,7 @@ public class ArticleController {
 
     @PostMapping()
     @ApiOperation(value = "创建文章", notes = "创建文章")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Article> createArticle(@RequestBody Article article) {
         if (userService.getUserById(article.getUserId()) == null) {
             return ResponseVO.createErr(USER_NOT_EXIST_ERROR);
@@ -56,6 +58,7 @@ public class ArticleController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新文章", notes = "增量更新文章")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Article> updateArticleSelective(@PathVariable(name = "id") Integer id,
                                                       @RequestBody Article article) {
         if (articleService.getArticleById(id) == null) {
@@ -71,6 +74,7 @@ public class ArticleController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新文章", notes = "全量更新文章")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Article> updateArticleAll(@PathVariable(name = "id") Integer id,
                                                 @RequestBody Article article) {
         if (articleService.getArticleById(id) == null) {

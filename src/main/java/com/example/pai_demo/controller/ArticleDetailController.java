@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.ArticleDetail;
 import com.example.pai_demo.model.vo.ResponseVO;
@@ -34,6 +35,7 @@ public class ArticleDetailController {
 
     @PostMapping()
     @ApiOperation(value = "创建文章内容", notes = "创建文章内容")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleDetail> createArticleDetail(@RequestBody ArticleDetail articleDetail) {
         if (articleService.getArticleById(articleDetail.getArticleId()) == null) {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
@@ -48,6 +50,7 @@ public class ArticleDetailController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新文章内容", notes = "增量更新文章内容")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleDetail> updateArticleDetailSelective(@PathVariable(name = "id") Integer id,
                                                                   @RequestBody ArticleDetail articleDetail) {
         if (articleDetailService.getArticleDetailById(id) == null) {
@@ -63,6 +66,7 @@ public class ArticleDetailController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新文章内容", notes = "全量更新文章内容")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleDetail> updateArticleDetailAll(@PathVariable(name = "id") Integer id,
                                                             @RequestBody ArticleDetail articleDetail) {
         if (articleDetailService.getArticleDetailById(id) == null) {
@@ -104,6 +108,7 @@ public class ArticleDetailController {
 
     @GetMapping()
     @ApiOperation(value = "根据文章id获取所有版本的文章内容列表", notes = "根据文章id获取所有版本的文章内容列表")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ReturnPageVO<ArticleDetail>> getArticleDetailListByArticleId(@RequestParam("articleId") Integer articleId,
                                                                                    @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                                    @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,

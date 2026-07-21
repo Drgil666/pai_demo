@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.UserHistory;
 import com.example.pai_demo.model.vo.ResponseVO;
@@ -34,6 +35,7 @@ public class UserHistoryController {
 
     @GetMapping()
     @ApiOperation(value = "查询用户流水列表", notes = "查询用户流水列表")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ReturnPageVO<UserHistory>> getFollowUserListByUserId(@RequestParam(value = "userId") Integer userId,
                                                                            @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,

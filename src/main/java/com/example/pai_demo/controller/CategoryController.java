@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.model.Category;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
@@ -35,6 +36,7 @@ public class CategoryController {
 
     @PostMapping()
     @ApiOperation(value = "创建目录", notes = "创建目录")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Category> createCategory(@RequestBody Category category) {
         if (userService.getUserById(category.getUserId()) == null) {
             return ResponseVO.createErr(USER_NOT_EXIST_ERROR);
@@ -49,6 +51,7 @@ public class CategoryController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新目录", notes = "增量更新目录")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Category> updateCategorySelective(@PathVariable(name = "id") Integer id,
                                                         @RequestBody Category category) {
         if (categoryService.getCategoryById(id) == null) {
@@ -64,6 +67,7 @@ public class CategoryController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新文章", notes = "全量更新文章")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<Category> updateCategoryAll(@PathVariable(name = "id") Integer id,
                                                   @RequestBody Category category) {
         if (categoryService.getCategoryById(id) == null) {

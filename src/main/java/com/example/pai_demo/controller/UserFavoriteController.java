@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.User;
@@ -43,6 +44,7 @@ public class UserFavoriteController {
 
     @PostMapping()
     @ApiOperation(value = "创建用户收藏", notes = "创建用户收藏")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFavorite> createUserFavorite(@RequestBody UserFavorite userFavorite) {
 
         if (userService.getUserById(userFavorite.getUserId()) == null) {
@@ -69,6 +71,7 @@ public class UserFavoriteController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新用户收藏", notes = "增量更新用户收藏")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFavorite> updateUserFavoriteSelective(@PathVariable(name = "id") Integer id,
                                                                 @RequestBody UserFavorite userFavorite) {
         if (userFavoriteService.getUserFavoriteById(id) == null) {
@@ -90,6 +93,7 @@ public class UserFavoriteController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新用户收藏", notes = "全量更新用户收藏")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFavorite> updateUserFavoriteAll(@PathVariable(name = "id") Integer id,
                                                           @RequestBody UserFavorite userFavorite) {
         if (userFavoriteService.getUserFavoriteById(id) == null) {
@@ -111,6 +115,7 @@ public class UserFavoriteController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取用户收藏", notes = "根据id获取用户收藏")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFavorite> getUserFavoriteById(@PathVariable(name = "id") Integer id) {
         UserFavorite userFavorite = userFavoriteService.getUserFavoriteById(id);
         if (userFavorite != null) {
@@ -122,6 +127,7 @@ public class UserFavoriteController {
 
     @GetMapping()
     @ApiOperation(value = "根据用户id获取用户收藏文章列表", notes = "根据用户id获取用户收藏文章列表")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ReturnPageVO<Article>> getArticleListByUserId(@RequestParam("userId") Integer userId,
                                                                     @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                     @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,

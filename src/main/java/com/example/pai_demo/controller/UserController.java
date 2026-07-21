@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.vo.LoginUserVO;
 import com.example.pai_demo.model.vo.LoginVO;
@@ -51,6 +52,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新用户", notes = "增量更新用户")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<User> updateUserSelective(@PathVariable(name = "id") Integer id,
                                                 @RequestBody User user) {
         if (userService.getUserById(id) == null) {
@@ -66,6 +68,7 @@ public class UserController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新用户", notes = "全量更新用户")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<User> updateUserAll(@PathVariable(name = "id") Integer id,
                                           @RequestBody User user) {
         if (userService.getUserById(id) == null) {

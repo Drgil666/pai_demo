@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.UserFollow;
@@ -39,6 +40,7 @@ public class UserFollowController {
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFollow> createUserFollow(@RequestBody UserFollow userFollow) {
         AssertionUtil.notNull(userFollow.getUserId(), ErrorCode.BIZ_PARAM_ILLEGAL, ID_NULL_ERROR);
         AssertionUtil.notNull(userFollow.getFollowId(), ErrorCode.BIZ_PARAM_ILLEGAL, ID_NULL_ERROR);
@@ -59,6 +61,7 @@ public class UserFollowController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新用户关注", notes = "增量更新用户关注")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<UserFollow> updateUserSelective(@PathVariable(name = "id") Integer id,
                                                       @RequestBody UserFollow userFollow) {
         if (userFollowService.getUserFollowById(id) == null) {
@@ -80,6 +83,7 @@ public class UserFollowController {
 
     @GetMapping()
     @ApiOperation(value = "根据昵称查询关注用户列表", notes = "根据昵称查询关注用户列表")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ReturnPageVO<User>> getFollowUserListByUserId(@RequestHeader(value = "token", required = false) String token,
                                                                     @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                     @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,

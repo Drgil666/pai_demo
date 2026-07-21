@@ -1,5 +1,6 @@
 package com.example.pai_demo.controller;
 
+import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.ArticleTag;
 import com.example.pai_demo.model.Tag;
@@ -38,6 +39,7 @@ public class ArticleTagController {
 
     @PostMapping()
     @ApiOperation(value = "创建文章标签关联", notes = "创建文章标签关联")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleTag> createArticleTag(@RequestBody ArticleTag articleTag) {
         //TODO:这里改为DTO，批量生成文章标签
         if (articleService.getArticleById(articleTag.getArticleId()) == null) {
@@ -59,6 +61,7 @@ public class ArticleTagController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新文章标签关联", notes = "增量更新文章标签关联")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleTag> updateArticleTagSelective(@PathVariable(name = "id") Integer id,
                                                             @RequestBody ArticleTag articleTag) {
         if (articleTagService.getArticleTagById(id) == null) {
@@ -74,6 +77,7 @@ public class ArticleTagController {
 
     @PostMapping("/{id}")
     @ApiOperation(value = "全量更新文章标签关联", notes = "全量更新文章标签关联")
+    @Authorize(value = Authorize.USER)
     public ResponseVO<ArticleTag> updateArticleTagAll(@PathVariable(name = "id") Integer id,
                                                       @RequestBody ArticleTag articleTag) {
         if (articleTagService.getArticleTagById(id) == null) {

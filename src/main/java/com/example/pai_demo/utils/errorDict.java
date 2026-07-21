@@ -16,6 +16,7 @@ public class errorDict {
     public static final String GET_USER_LIST_ERROR = "获取用户列表失败！";
     //Token相关
     public static final String GET_TOKEN_ERROR = "Token过期或错误！请重新登录！";
+    public static final String PRIVILEGE_ERROR = "权限不足！";
     public static final String EMPTY_USERNAME_OR_PASSWORD_ERROR = "用户名或密码不可为空！";
     public static final String LOGIN_ERROR = "用户名或密码错误！";
     //分页插件相关
@@ -37,6 +38,8 @@ public class errorDict {
     public static final String TAG_NAME_EXIST_ERROR = "标签名已存在！";
     public static final String TAG_NAME_NULL_ERROR = "标签名不可为空！";
     public static final String TAG_NOT_EXIST_ERROR = "标签不存在！";
+    //Notify相关
+    public static final String NOTIFY_NOT_EXIST_ERROR = "通知不存在！";
     //ArticleDetail相关
     public static final String CREATE_ARTICLE_DETAIL_ERROR = "创建文章内容失败！";
     public static final String ARTICLE_DETAIL_NOT_EXIST_ERROR = "文章内容不存在！";
