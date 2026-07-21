@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.CommentMapper">
+    <update id="updateCommentSelective">
+        UPDATE `comment`
+        <set>
+            <if test="comment.articleId != null">
+                article_id = #{comment.articleId},
+            </if>
+            <if test="comment.userId != null">
+                user_id = #{comment.userId},
+            </if>
+            <if test="comment.content != null">
+                content = #{comment.content},
+            </if>
+            <if test="comment.topCommentId != null">
+                top_comment_id = #{comment.topCommentId},
+            </if>
+            <if test="comment.parentCommentId != null">
+                parent_comment_id = #{comment.parentCommentId},
+            </if>
+            <if test="comment.isDelete != null">
+                is_delete = #{comment.isDelete},
+            </if>
+            <if test="comment.updateTime != null">
+                update_time = #{comment.updateTime},
+            </if>
+        </set>
+        WHERE id = #{comment.id} and is_delete=0
+    </update>
+</mapper>
