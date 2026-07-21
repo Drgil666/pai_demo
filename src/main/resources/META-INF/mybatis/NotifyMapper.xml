@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.pai_demo.mapper.NotifyMapper">
+    <update id="updateNotifySelective">
+        UPDATE `notify`
+        <set>
+            <if test="notify.operateUserId != null">
+                operate_user_id = #{notify.operateUserId},
+            </if>
+            <if test="notify.notifyUserId != null">
+                notify_user_id = #{notify.notifyUserId},
+            </if>
+            <if test="notify.content != null">
+                content = #{notify.content},
+            </if>
+            <if test="notify.type != null">
+                type = #{notify.type},
+            </if>
+            <if test="notify.isRead != null">
+                is_read = #{notify.isRead},
+            </if>
+            <if test="notify.isDelete != null">
+                is_delete = #{notify.isDelete},
+            </if>
+            <if test="notify.updateTime != null">
+                update_time = #{notify.updateTime},
+            </if>
+        </set>
+        WHERE id = #{notify.id} and is_delete=0
+    </update>
+</mapper>

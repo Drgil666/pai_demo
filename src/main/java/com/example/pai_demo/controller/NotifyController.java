@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-import static com.example.pai_demo.utils.errorDict.NOTIFY_NOT_EXIST_ERROR;
-import static com.example.pai_demo.utils.errorDict.USER_NOT_EXIST_ERROR;
+import static com.example.pai_demo.utils.errorDict.*;
 
 /**
  * @author GilbertYoung
@@ -33,6 +32,54 @@ public class NotifyController {
     private NotifyService notifyService;
     @Resource
     private UserService userService;
+
+    @PostMapping()
+    @ApiOperation(value = "创建通知", notes = "创建通知")
+    @Authorize(Authorize.ADMIN)
+    public ResponseVO<Notify> createNotify(@RequestBody Notify notify) {
+        if (userService.getUserById(notify.getNotifyUserId()) == null ||
+                userService.getUserById(notify.getOperateUserId()) == null) {
+            return ResponseVO.createErr(USER_NOT_EXIST_ERROR);
+        }
+        notifyService.createNotify(notify);
+        if (notify.getId() != null) {
+            return ResponseVO.createSuc(notify);
+        } else {
+            return ResponseVO.createErr(NOTIFY_NOT_EXIST_ERROR);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    @ApiOperation(value = "增量更新通知", notes = "增量更新通知，通常用于标记已读")
+    @Authorize(value = Authorize.USER)
+    public ResponseVO<Notify> updateNotifySelective(@PathVariable(name = "id") Integer id,
+                                                    @RequestBody Notify notify) {
+        if (notifyService.getNotifyById(id) == null) {
+            return ResponseVO.createErr(NOTIFY_NOT_EXIST_ERROR);
+        }
+        notify.setId(id);
+        if (notifyService.updateNotifySelective(notify) == 1) {
+            return ResponseVO.createSuc(notifyService.getNotifyById(id));
+        } else {
+            return ResponseVO.createErr(UPDATE_ERROR);
+        }
+    }
+
+    @PostMapping("/{id}")
+    @ApiOperation(value = "全量更新通知", notes = "全量更新通知")
+    @Authorize(value = Authorize.USER)
+    public ResponseVO<Notify> updateNotifyAll(@PathVariable(name = "id") Integer id,
+                                              @RequestBody Notify notify) {
+        if (notifyService.getNotifyById(id) == null) {
+            return ResponseVO.createErr(NOTIFY_NOT_EXIST_ERROR);
+        }
+        notify.setId(id);
+        if (notifyService.updateNotifyAll(notify) == 1) {
+            return ResponseVO.createSuc(notifyService.getNotifyById(id));
+        } else {
+            return ResponseVO.createErr(UPDATE_ERROR);
+        }
+    }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取通知", notes = "根据id获取通知")

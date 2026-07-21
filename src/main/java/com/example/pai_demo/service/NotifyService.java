@@ -31,5 +31,21 @@ public interface NotifyService {
      * @param userId 被通知的用户id
      * @return 通知列表
      */
+    /**
+     * 增量更新通知
+     *
+     * @param notify 通知
+     * @return 影响的行数
+     */
+    Long updateNotifySelective(Notify notify);
+
+    /**
+     * 全量更新通知
+     *
+     * @param notify 通知
+     * @return 影响的行数
+     */
+    Long updateNotifyAll(Notify notify);
+
     List<Notify> getNotifyListByUserId(Integer userId);
 }

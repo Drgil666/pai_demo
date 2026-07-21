@@ -40,4 +40,9 @@ public class Notify extends BaseEntity {
      */
     @ApiModelProperty(value = "通知的类型(0-系统,1-评论,2-回复,3-点赞,4-收藏,5-关注)")
     private Integer type;
+    /**
+     * 是否已读(0-未读,1-已读)
+     */
+    @ApiModelProperty(value = "是否已读(0-未读,1-已读)")
+    private Integer isRead;
 }

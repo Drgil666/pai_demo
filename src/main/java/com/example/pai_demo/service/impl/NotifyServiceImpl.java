@@ -29,6 +29,7 @@ public class NotifyServiceImpl implements NotifyService {
     @Override
     public Boolean createNotify(Notify notify) {
         notify.setIsDelete(0);
+        notify.setIsRead(0);
         notify.setCreateTime(new Date());
         notify.setUpdateTime(notify.getCreateTime());
         return notifyMapper.createNotify(notify);
@@ -51,6 +52,30 @@ public class NotifyServiceImpl implements NotifyService {
      * @param userId 被通知的用户id
      * @return 通知列表
      */
+    /**
+     * 增量更新通知
+     *
+     * @param notify 通知
+     * @return 影响的行数
+     */
+    @Override
+    public Long updateNotifySelective(Notify notify) {
+        notify.setUpdateTime(new Date());
+        return notifyMapper.updateNotifySelective(notify);
+    }
+
+    /**
+     * 全量更新通知
+     *
+     * @param notify 通知
+     * @return 影响的行数
+     */
+    @Override
+    public Long updateNotifyAll(Notify notify) {
+        notify.setUpdateTime(new Date());
+        return notifyMapper.updateNotifyAll(notify);
+    }
+
     @Override
     public List<Notify> getNotifyListByUserId(Integer userId) {
         return notifyMapper.getNotifyListByUserId(userId);
