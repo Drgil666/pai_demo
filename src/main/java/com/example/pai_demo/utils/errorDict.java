@@ -37,6 +37,9 @@ public class errorDict {
     public static final String TAG_NAME_EXIST_ERROR = "标签名已存在！";
     public static final String TAG_NAME_NULL_ERROR = "标签名不可为空！";
     public static final String TAG_NOT_EXIST_ERROR = "标签不存在！";
+    //ArticleDetail相关
+    public static final String CREATE_ARTICLE_DETAIL_ERROR = "创建文章内容失败！";
+    public static final String ARTICLE_DETAIL_NOT_EXIST_ERROR = "文章内容不存在！";
     //ArticleTag相关
     public static final String CREATE_ARTICLE_TAG_ERROR = "创建文章标签关联失败！";
     public static final String ARTICLE_TAG_EXIST_ERROR = "该文章标签关联已存在！";
