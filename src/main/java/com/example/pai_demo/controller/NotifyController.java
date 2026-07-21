@@ -37,6 +37,7 @@ public class NotifyController {
     @ApiOperation(value = "创建通知", notes = "创建通知")
     @Authorize(Authorize.ADMIN)
     public ResponseVO<Notify> createNotify(@RequestBody Notify notify) {
+        //TODO:要在其他的Controller层中补全Notify的创建！
         if (userService.getUserById(notify.getNotifyUserId()) == null ||
                 userService.getUserById(notify.getOperateUserId()) == null) {
             return ResponseVO.createErr(USER_NOT_EXIST_ERROR);
