@@ -68,8 +68,8 @@ public class AuthorizeInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        int[] allowed = authorize.value();
-        if (!Arrays.stream(allowed).anyMatch(p -> p == user.getPrivilege())) {
+        int maxPrivilege = Arrays.stream(authorize.value()).max().orElse(Authorize.USER);
+        if (user.getPrivilege() > maxPrivilege) {
             writeUnauthorized(response, PRIVILEGE_ERROR);
             return false;
         }
