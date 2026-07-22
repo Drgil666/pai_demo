@@ -3,10 +3,12 @@ package com.example.pai_demo.dao.impl;
 
 import com.example.pai_demo.dao.TokenDao;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,6 +57,19 @@ public class TokenDaoImpl implements TokenDao {
     @Override
     public void deleteValue(String key) {
         stringRedisTemplate.delete(key);
+    }
+
+    /**
+     * 某个key的域增加值
+     *
+     * @param key   键值
+     * @param field 域
+     * @param cnt   增加的值
+     * @return 是否成功
+     */
+    @Override
+    public Long hIncr(String key, String field, Integer cnt) {
+        return stringRedisTemplate.execute((RedisCallback<Long>) con -> con.hIncrBy(key.getBytes(StandardCharsets.UTF_8), field.getBytes(StandardCharsets.UTF_8), cnt));
     }
 
 }

@@ -1,9 +1,12 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.model.Comment;
+import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,6 +22,8 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     @Resource
     private CommentMapper commentMapper;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 创建评论
@@ -31,7 +36,16 @@ public class CommentServiceImpl implements CommentService {
         comment.setIsDelete(0);
         comment.setCreateTime(new Date());
         comment.setUpdateTime(comment.getCreateTime());
-        return commentMapper.createComment(comment);
+        if (commentMapper.createComment(comment)) {
+            //创建评论时，同步更新缓存
+            ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+            articleStatisticEvent.setArticleId(comment.getArticleId());
+            articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT);
+            eventPublisher.publishEvent(articleStatisticEvent);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -42,8 +56,24 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public Long updateCommentSelective(Comment comment) {
+        Comment backup = commentMapper.getCommentById(comment.getId());
         comment.setUpdateTime(new Date());
-        return commentMapper.updateCommentSelective(comment);
+        Long result = commentMapper.updateCommentSelective(comment);
+        if (result != 0) {
+            if (comment.getIsDelete() == 1) {
+                Long cnt = commentMapper.deleteCommentsByTopCommentId(comment.getId());
+                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
+                for (long i = 0L; i <= cnt; i++) {
+                    eventPublisher.publishEvent(articleStatisticEvent);
+                }
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**
@@ -54,8 +84,25 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public Long updateCommentAll(Comment comment) {
+        Comment backup = commentMapper.getCommentById(comment.getId());
         comment.setUpdateTime(new Date());
-        return commentMapper.updateCommentAll(comment);
+        Long result = commentMapper.updateCommentAll(comment);
+        if (result != 0) {
+            comment = commentMapper.getCommentById(comment.getId());
+            if (comment.getIsDelete() == 1) {
+                Long cnt = commentMapper.deleteCommentsByTopCommentId(comment.getId());
+                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
+                for (long i = 0L; i < cnt; i++) {
+                    eventPublisher.publishEvent(articleStatisticEvent);
+                }
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**
@@ -85,7 +132,6 @@ public class CommentServiceImpl implements CommentService {
      * 根据顶级评论id获取子评论列表
      *
      * @param topCommentId 顶级评论id
-     * @param keyword      关键词
      * @return 评论列表
      */
     @Override

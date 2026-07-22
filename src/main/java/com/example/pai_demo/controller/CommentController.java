@@ -90,9 +90,6 @@ public class CommentController {
         comment.setId(id);
         if (commentService.updateCommentSelective(comment) == 1) {
             Comment result = commentService.getCommentById(id);
-            if (comment.getIsDelete() == 1) {
-                commentService.deleteCommentsByTopCommentId(result.getTopCommentId());
-            }
             return ResponseVO.createSuc(result);
         } else {
             return ResponseVO.createErr(UPDATE_ERROR);
@@ -110,9 +107,6 @@ public class CommentController {
         comment.setId(id);
         if (commentService.updateCommentAll(comment) == 1) {
             Comment result = commentService.getCommentById(id);
-            if (comment.getIsDelete() == 1) {
-                commentService.deleteCommentsByTopCommentId(result.getTopCommentId());
-            }
             return ResponseVO.createSuc(result);
         } else {
             return ResponseVO.createErr(UPDATE_ERROR);

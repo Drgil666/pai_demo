@@ -1,10 +1,15 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.ArticleStatisticEventEnum;
+import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.mapper.UserFavoriteMapper;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.UserFavorite;
+import com.example.pai_demo.model.event.ArticleStatisticEvent;
+import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.service.UserFavoriteService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,6 +25,8 @@ import java.util.List;
 public class UserFavoriteServiceImpl implements UserFavoriteService {
     @Resource
     private UserFavoriteMapper userFavoriteMapper;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 创建用户收藏
@@ -32,7 +39,20 @@ public class UserFavoriteServiceImpl implements UserFavoriteService {
         userFavorite.setIsDelete(0);
         userFavorite.setCreateTime(new Date());
         userFavorite.setUpdateTime(userFavorite.getCreateTime());
-        return userFavoriteMapper.createUserFavorite(userFavorite);
+        if (userFavoriteMapper.createUserFavorite(userFavorite)) {
+            //用户收藏文章时redis同步缓存，使得文章和用户同步更新统计量
+            UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+            userStatisticEvent.setUserId(userFavorite.getUserId());
+            userStatisticEvent.setType(UserStatisticEventEnum.USER_FAVORITE);
+            eventPublisher.publishEvent(userStatisticEvent);
+            ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+            articleStatisticEvent.setArticleId(userFavorite.getArticleId());
+            articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_FAVORITE);
+            eventPublisher.publishEvent(articleStatisticEvent);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -43,8 +63,25 @@ public class UserFavoriteServiceImpl implements UserFavoriteService {
      */
     @Override
     public Long updateUserFavoriteSelective(UserFavorite userFavorite) {
+        UserFavorite backup = userFavoriteMapper.getUserFavoriteById(userFavorite.getId());
         userFavorite.setUpdateTime(new Date());
-        return userFavoriteMapper.updateUserFavoriteSelective(userFavorite);
+        Long result = userFavoriteMapper.updateUserFavoriteSelective(userFavorite);
+        if (result != 0) {
+            if (userFavorite.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_FAVORITE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_FAVORITE_CANCEL);
+                eventPublisher.publishEvent(articleStatisticEvent);
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**
@@ -55,8 +92,25 @@ public class UserFavoriteServiceImpl implements UserFavoriteService {
      */
     @Override
     public Long updateUserFavoriteAll(UserFavorite userFavorite) {
+        UserFavorite backup = userFavoriteMapper.getUserFavoriteById(userFavorite.getId());
         userFavorite.setUpdateTime(new Date());
-        return userFavoriteMapper.updateUserFavoriteAll(userFavorite);
+        Long result = userFavoriteMapper.updateUserFavoriteAll(userFavorite);
+        if (result != 0) {
+            if (userFavorite.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_FAVORITE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_FAVORITE_CANCEL);
+                eventPublisher.publishEvent(articleStatisticEvent);
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**

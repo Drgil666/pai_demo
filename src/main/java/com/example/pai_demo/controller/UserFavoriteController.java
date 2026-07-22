@@ -83,13 +83,13 @@ public class UserFavoriteController {
             return ResponseVO.createErr(USER_FAVORITE_NOT_EXIST_ERROR);
         }
         userFavorite.setId(id);
+        UserFavorite backup = userFavoriteService.getUserFavoriteById(id);
+        //创建用户操作流水
+        UserHistory userHistory = new UserHistory();
+        userHistory.setUserId(backup.getUserId());
+        userHistory.setIsFavorite(2);
+        userHistory.setObjectId(backup.getArticleId());
         if (userFavoriteService.updateUserFavoriteSelective(userFavorite) == 1) {
-            userFavorite = userFavoriteService.getUserFavoriteById(id);
-            //创建用户操作流水
-            UserHistory userHistory = new UserHistory();
-            userHistory.setUserId(userFavorite.getUserId());
-            userHistory.setIsFavorite(2);
-            userHistory.setObjectId(userFavorite.getArticleId());
             userHistoryService.createUserHistory(userHistory);
             return ResponseVO.createSuc(userFavorite);
         } else {
@@ -106,13 +106,13 @@ public class UserFavoriteController {
             return ResponseVO.createErr(USER_FAVORITE_NOT_EXIST_ERROR);
         }
         userFavorite.setId(id);
+        UserFavorite backup = userFavoriteService.getUserFavoriteById(id);
+        //创建用户操作流水
+        UserHistory userHistory = new UserHistory();
+        userHistory.setUserId(backup.getUserId());
+        userHistory.setIsFavorite(2);
+        userHistory.setObjectId(backup.getArticleId());
         if (userFavoriteService.updateUserFavoriteAll(userFavorite) == 1) {
-            userFavorite = userFavoriteService.getUserFavoriteById(id);
-            //创建用户操作流水
-            UserHistory userHistory = new UserHistory();
-            userHistory.setUserId(userFavorite.getUserId());
-            userHistory.setIsFavorite(2);
-            userHistory.setObjectId(userFavorite.getArticleId());
             userHistoryService.createUserHistory(userHistory);
             return ResponseVO.createSuc(userFavorite);
         } else {

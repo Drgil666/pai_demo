@@ -1,10 +1,13 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.mapper.UserFollowMapper;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.UserFollow;
+import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.service.UserFollowService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,6 +23,8 @@ import java.util.List;
 public class UserFollowServiceImpl implements UserFollowService {
     @Resource
     private UserFollowMapper userFollowMapper;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 关注用户
@@ -32,7 +37,20 @@ public class UserFollowServiceImpl implements UserFollowService {
         userFollow.setIsDelete(0);
         userFollow.setCreateTime(new Date());
         userFollow.setUpdateTime(userFollow.getCreateTime());
-        return userFollowMapper.createUserFollow(userFollow);
+        if (userFollowMapper.createUserFollow(userFollow)) {
+            //关注用户时redis同步缓存,为双方用户都更新统计
+            UserStatisticEvent userStatisticEvent1 = new UserStatisticEvent();
+            userStatisticEvent1.setUserId(userFollow.getUserId());
+            userStatisticEvent1.setType(UserStatisticEventEnum.USER_FOLLOW);
+            eventPublisher.publishEvent(userStatisticEvent1);
+            UserStatisticEvent userStatisticEvent2 = new UserStatisticEvent();
+            userStatisticEvent2.setUserId(userFollow.getFollowId());
+            userStatisticEvent2.setType(UserStatisticEventEnum.USER_FOLLOWER);
+            eventPublisher.publishEvent(userStatisticEvent2);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

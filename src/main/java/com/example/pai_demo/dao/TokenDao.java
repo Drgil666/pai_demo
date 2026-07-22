@@ -28,4 +28,14 @@ public interface TokenDao {
      * @param key 键
      */
     void deleteValue(String key);
+
+    /**
+     * 某个key的域增加值
+     *
+     * @param key   键值
+     * @param field 域
+     * @param cnt   增加的值
+     * @return 是否成功
+     */
+    Long hIncr(String key, String field, Integer cnt);
 }

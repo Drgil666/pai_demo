@@ -1,16 +1,21 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.ArticleStatisticEventEnum;
+import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.mapper.ArticleMapper;
 import com.example.pai_demo.mapper.ArticleTagMapper;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.mapper.UserFavoriteMapper;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Tag;
+import com.example.pai_demo.model.event.ArticleStatisticEvent;
+import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.model.vo.ArticleVO;
 import com.example.pai_demo.service.ArticleService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +38,8 @@ public class ArticleServiceImpl implements ArticleService {
     private UserFavoriteMapper userFavoriteMapper;
     @Resource
     private CommentMapper commentMapper;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 创建文章
@@ -46,7 +53,16 @@ public class ArticleServiceImpl implements ArticleService {
         article.setStatus(0);
         article.setCreateTime(new Date());
         article.setUpdateTime(article.getCreateTime());
-        return articleMapper.createArticle(article);
+        if (articleMapper.createArticle(article)) {
+            //创建文章时redis同步缓存
+            UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+            userStatisticEvent.setUserId(article.getUserId());
+            userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE);
+            eventPublisher.publishEvent(userStatisticEvent);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -57,8 +73,21 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public Long updateArticleSelective(Article article) {
+        Article backup = articleMapper.getArticleById(article.getId());
         article.setUpdateTime(new Date());
-        return articleMapper.updateArticleSelective(article);
+        Long result = articleMapper.updateArticleSelective(article);
+        if (result != 0) {
+            if (article.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**
@@ -69,8 +98,22 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public Long updateArticleAll(Article article) {
+        Article backup = articleMapper.getArticleById(article.getId());
         article.setUpdateTime(new Date());
-        return articleMapper.updateArticleAll(article);
+        Long result = articleMapper.updateArticleAll(article);
+        if (result != 0) {
+            article = articleMapper.getArticleById(article.getId());
+            if (article.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+            }
+            return result;
+        } else {
+            return 0L;
+        }
     }
 
     /**
@@ -82,7 +125,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleVO getArticleVOById(Integer id) {
         Article article = articleMapper.getArticleById(id);
-        return getArticleVO(article, null);
+        ArticleVO articleVO = getArticleVO(article, null);
+        //阅读文章时redis同步缓存
+        ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+        articleStatisticEvent.setArticleId(article.getId());
+        articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_READ);
+        eventPublisher.publishEvent(articleStatisticEvent);
+        return articleVO;
     }
 
     /**
