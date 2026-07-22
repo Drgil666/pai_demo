@@ -80,6 +80,18 @@ public class ArticleServiceImpl implements ArticleService {
      * @return 文章信息
      */
     @Override
+    public ArticleVO getArticleVOById(Integer id) {
+        Article article = articleMapper.getArticleById(id);
+        return getArticleVO(article, null);
+    }
+
+    /**
+     * 根据id获取文章
+     *
+     * @param id 文章id
+     * @return 文章信息
+     */
+    @Override
     public Article getArticleById(Integer id) {
         return articleMapper.getArticleById(id);
     }
@@ -94,7 +106,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleVO> getArticleVOListByUserId(Integer userId, String keyword) {
         List<Article> articleList = articleMapper.getArticleListByUserId(userId, keyword);
-        return getArticleVO(articleList, keyword);
+        List<ArticleVO> articleVOList = new ArrayList<>();
+        for (Article article : articleList) {
+            ArticleVO articleVO = getArticleVO(article, keyword);
+            articleVOList.add(articleVO);
+        }
+        return articleVOList;
     }
 
     /**
@@ -107,21 +124,22 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleVO> getArticleVOListByCategoryId(Integer categoryId, String keyword) {
         List<Article> articleList = articleMapper.getArticleListByCategoryId(categoryId, keyword);
-        return getArticleVO(articleList, keyword);
-    }
-
-    @NotNull
-    private List<ArticleVO> getArticleVO(List<Article> articleList, String keyword) {
         List<ArticleVO> articleVOList = new ArrayList<>();
         for (Article article : articleList) {
-            ArticleVO articleVO = new ArticleVO();
-            BeanUtils.copyProperties(article, articleVO);
-            List<Tag> tagList = articleTagMapper.getTagListByArticleId(article.getId(), keyword);
-            articleVO.setArticleTag(tagList);
-            articleVO.setFavoriteCount(userFavoriteMapper.getUserFavoriteCountByArticleId(article.getId()));
-            articleVO.setCommentCount(commentMapper.getCommentCountByArticleId(article.getId()));
+            ArticleVO articleVO = getArticleVO(article, keyword);
             articleVOList.add(articleVO);
         }
         return articleVOList;
+    }
+
+    @NotNull
+    private ArticleVO getArticleVO(Article article, String keyword) {
+        ArticleVO articleVO = new ArticleVO();
+        BeanUtils.copyProperties(article, articleVO);
+        List<Tag> tagList = articleTagMapper.getTagListByArticleId(article.getId(), keyword);
+        articleVO.setArticleTag(tagList);
+        articleVO.setFavoriteCount(userFavoriteMapper.getUserFavoriteCountByArticleId(article.getId()));
+        articleVO.setCommentCount(commentMapper.getCommentCountByArticleId(article.getId()));
+        return articleVO;
     }
 }

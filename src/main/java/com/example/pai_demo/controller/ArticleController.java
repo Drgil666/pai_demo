@@ -91,10 +91,10 @@ public class ArticleController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取文章", notes = "根据id获取文章")
-    public ResponseVO<Article> getArticleById(@PathVariable(name = "id") Integer id) {
-        Article article = articleService.getArticleById(id);
-        if (article != null) {
-            return ResponseVO.createSuc(article);
+    public ResponseVO<ArticleVO> getArticleVOById(@PathVariable(name = "id") Integer id) {
+        ArticleVO articleVO = articleService.getArticleVOById(id);
+        if (articleVO != null) {
+            return ResponseVO.createSuc(articleVO);
         } else {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
@@ -102,7 +102,7 @@ public class ArticleController {
 
     @GetMapping("/user_id")
     @ApiOperation(value = "根据用户id获取文章列表", notes = "根据用户id获取文章列表")
-    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleListByUserId(@RequestParam("userId") Integer userId,
+    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleVOListByUserId(@RequestParam("userId") Integer userId,
                                                                     @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                     @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -122,7 +122,7 @@ public class ArticleController {
 
     @GetMapping("/category_id")
     @ApiOperation(value = "根据目录id获取文章列表", notes = "根据目录id获取文章列表")
-    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleListByCategoryId(@RequestParam("categoryId") Integer categoryId,
+    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleVOListByCategoryId(@RequestParam("categoryId") Integer categoryId,
                                                                           @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                           @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,

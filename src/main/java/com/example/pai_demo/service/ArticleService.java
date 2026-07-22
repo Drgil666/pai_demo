@@ -41,6 +41,14 @@ public interface ArticleService {
      * @param id 文章id
      * @return 文章信息
      */
+    ArticleVO getArticleVOById(Integer id);
+
+    /**
+     * 根据id获取文章
+     *
+     * @param id 文章id
+     * @return 文章信息
+     */
     Article getArticleById(Integer id);
 
     /**
