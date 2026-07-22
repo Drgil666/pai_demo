@@ -1,7 +1,7 @@
 package com.example.pai_demo.model.vo;
 
 import com.example.pai_demo.model.Article;
-import com.example.pai_demo.model.ArticleTag;
+import com.example.pai_demo.model.Tag;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class ArticleVO extends Article {
      * 文章标签
      */
     @ApiModelProperty(value = "文章标签")
-    private List<ArticleTag> articleTags;
+    private List<Tag> articleTag;
     /**
      * 文章评论
      */

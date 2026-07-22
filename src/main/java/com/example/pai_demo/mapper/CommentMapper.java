@@ -82,4 +82,13 @@ public interface CommentMapper {
      */
     @Update("update comment set is_delete=1 where top_comment_id=#{topCommentId} and is_delete=0")
     Long deleteCommentsByTopCommentId(@Param("topCommentId") Integer topCommentId);
+
+    /**
+     * 根据文章id获取评论数
+     *
+     * @param articleId 文章id
+     * @return 评论列表
+     */
+    @Select("select count(*) from comment where article_id=#{articleId} and is_delete=0")
+    Integer getCommentCountByArticleId(@Param("articleId") Integer articleId);
 }

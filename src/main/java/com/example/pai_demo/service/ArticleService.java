@@ -1,6 +1,7 @@
 package com.example.pai_demo.service;
 
 import com.example.pai_demo.model.Article;
+import com.example.pai_demo.model.vo.ArticleVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public interface ArticleService {
      * @param keyword 关键词
      * @return 文章列表
      */
-    List<Article> getArticleListByUserId(Integer userId, String keyword);
+    List<ArticleVO> getArticleVOListByUserId(Integer userId, String keyword);
 
     /**
      * 根据目录id获取文章列表
@@ -58,6 +59,5 @@ public interface ArticleService {
      * @param keyword    关键词
      * @return 文章列表
      */
-    List<Article> getArticleListByCategoryId(Integer categoryId, @Param("keyword") String keyword);
-
+    List<ArticleVO> getArticleVOListByCategoryId(Integer categoryId, String keyword);
 }

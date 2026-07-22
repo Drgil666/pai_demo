@@ -5,6 +5,7 @@ import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Category;
 import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.vo.ArticleVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.ArticleService;
@@ -101,7 +102,7 @@ public class ArticleController {
 
     @GetMapping("/user_id")
     @ApiOperation(value = "根据用户id获取文章列表", notes = "根据用户id获取文章列表")
-    public ResponseVO<ReturnPageVO<Article>> getArticleListByUserId(@RequestParam("userId") Integer userId,
+    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleListByUserId(@RequestParam("userId") Integer userId,
                                                                     @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                     @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -112,29 +113,29 @@ public class ArticleController {
             return ResponseVO.createErr(USER_NOT_EXIST_ERROR);
         }
         ListPageUtil.paging(current, pageSize, sorter);
-        List<Article> articleList = articleService.getArticleListByUserId(userId, keyword);
-        PageInfo<Article> pageInfo = new PageInfo<>(articleList);
-        ReturnPageVO<Article> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        List<ArticleVO> articleList = articleService.getArticleVOListByUserId(userId, keyword);
+        PageInfo<ArticleVO> pageInfo = new PageInfo<>(articleList);
+        ReturnPageVO<ArticleVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
     //TODO:把所有获取的Article都改为VO
 
     @GetMapping("/category_id")
     @ApiOperation(value = "根据目录id获取文章列表", notes = "根据目录id获取文章列表")
-    public ResponseVO<ReturnPageVO<Article>> getArticleListByCategoryId(@RequestParam("categoryId") Integer categoryId,
-                                                                        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                                        @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                        @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+    public ResponseVO<ReturnPageVO<ArticleVO>> getArticleListByCategoryId(@RequestParam("categoryId") Integer categoryId,
+                                                                          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                          @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                          @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(categoryId, ErrorCode.BIZ_PARAM_ILLEGAL, CATEGORY_NOT_EXIST_ERROR);
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
             return ResponseVO.createErr(CATEGORY_NOT_EXIST_ERROR);
         }
         ListPageUtil.paging(current, pageSize, sorter);
-        List<Article> articleList = articleService.getArticleListByCategoryId(categoryId, keyword);
-        PageInfo<Article> pageInfo = new PageInfo<>(articleList);
-        ReturnPageVO<Article> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        List<ArticleVO> articleList = articleService.getArticleVOListByCategoryId(categoryId, keyword);
+        PageInfo<ArticleVO> pageInfo = new PageInfo<>(articleList);
+        ReturnPageVO<ArticleVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
 }

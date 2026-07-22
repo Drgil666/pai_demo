@@ -72,4 +72,5 @@ public interface ArticleMapper {
     @Select("select * from article where category_id=#{categoryId} and is_delete=0 " +
             "and title like CONCAT('%',#{keyword},'%')")
     List<Article> getArticleListByCategoryId(@Param("categoryId") Integer categoryId, @Param("keyword") String keyword);
+
 }

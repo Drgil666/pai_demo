@@ -71,4 +71,13 @@ public interface UserFavoriteMapper {
     @Select("select article.* from user_favorite left join article on user_favorite.article_id = article.id " +
             "where user_favorite.user_id=#{userId} and user_favorite.is_delete=0 and article.title like CONCAT('%',#{keyword},'%')")
     List<Article> getUserFavoriteArticleListByUserId(@Param("userId") Integer userId, @Param("keyword") String keyword);
+
+    /**
+     * 根据文章id获取收藏数
+     *
+     * @param articleId 文章id
+     * @return 收藏数
+     */
+    @Select("select count(*) from user_favorite where article_id=#{articleId} and is_delete=0")
+    Integer getUserFavoriteCountByArticleId(@Param("articleId") Integer articleId);
 }

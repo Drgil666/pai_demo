@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.pai_demo.utils.errorDict.*;
@@ -40,23 +41,26 @@ public class ArticleTagController {
     @PostMapping()
     @ApiOperation(value = "创建文章标签关联", notes = "创建文章标签关联")
     @Authorize(value = Authorize.USER)
-    public ResponseVO<ArticleTag> createArticleTag(@RequestBody ArticleTag articleTag) {
-        //TODO:这里改为DTO，批量生成文章标签
-        if (articleService.getArticleById(articleTag.getArticleId()) == null) {
-            return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
+    public ResponseVO<List<ArticleTag>> createArticleTag(@RequestBody List<ArticleTag> articleTaglist) {
+        List<ArticleTag> result = new ArrayList<>();
+        for (ArticleTag articleTag : articleTaglist) {
+            if (articleService.getArticleById(articleTag.getArticleId()) == null) {
+                return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
+            }
+            if (tagService.getTagById(articleTag.getTagId()) == null) {
+                return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
+            }
+            if (articleTagService.getArticleTagByArticleIdAndTagId(articleTag.getArticleId(), articleTag.getTagId()) != null) {
+                return ResponseVO.createErr(ARTICLE_TAG_EXIST_ERROR);
+            }
+            articleTagService.createArticleTag(articleTag);
+            if (articleTag.getId() != null) {
+                result.add(articleTag);
+            } else {
+                return ResponseVO.createErr(CREATE_ARTICLE_TAG_ERROR);
+            }
         }
-        if (tagService.getTagById(articleTag.getTagId()) == null) {
-            return ResponseVO.createErr(TAG_NOT_EXIST_ERROR);
-        }
-        if (articleTagService.getArticleTagByArticleIdAndTagId(articleTag.getArticleId(), articleTag.getTagId()) != null) {
-            return ResponseVO.createErr(ARTICLE_TAG_EXIST_ERROR);
-        }
-        articleTagService.createArticleTag(articleTag);
-        if (articleTag.getId() != null) {
-            return ResponseVO.createSuc(articleTag);
-        } else {
-            return ResponseVO.createErr(CREATE_ARTICLE_TAG_ERROR);
-        }
+        return ResponseVO.createSuc(result);
     }
 
     @PatchMapping("/{id}")
