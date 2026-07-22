@@ -40,6 +40,10 @@ public class errorDict {
     public static final String TAG_NOT_EXIST_ERROR = "标签不存在！";
     //Notify相关
     public static final String NOTIFY_NOT_EXIST_ERROR = "通知不存在！";
+    public static final String NOTIFY_ARTICLE_CONTENT = "有人评论了你的文章";
+    public static final String NOTIFY_COMMENT_CONTENT = "有人回复了你的评论";
+    public static final String NOTIFY_FAVORITE_CONTENT = "有人收藏了你的文章";
+    public static final String NOTIFY_SUBSCRIBE_CONTENT = "有人关注了你";
     //ArticleDetail相关
     public static final String CREATE_ARTICLE_DETAIL_ERROR = "创建文章内容失败！";
     public static final String ARTICLE_DETAIL_NOT_EXIST_ERROR = "文章内容不存在！";

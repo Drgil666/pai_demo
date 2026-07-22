@@ -3,10 +3,12 @@ package com.example.pai_demo.controller;
 import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Comment;
+import com.example.pai_demo.model.Notify;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.ArticleService;
 import com.example.pai_demo.service.CommentService;
+import com.example.pai_demo.service.NotifyService;
 import com.example.pai_demo.service.UserService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
@@ -35,6 +37,8 @@ public class CommentController {
     private ArticleService articleService;
     @Resource
     private UserService userService;
+    @Resource
+    private NotifyService notifyService;
 
     @PostMapping()
     @ApiOperation(value = "创建评论", notes = "创建评论")
@@ -54,6 +58,19 @@ public class CommentController {
         }
         commentService.createComment(comment);
         if (comment.getId() != null) {
+            Notify notify = new Notify();
+            notify.setType(Notify.NOTIFY_COMMENT);
+            notify.setOperateUserId(comment.getUserId());
+            if (comment.getTopCommentId() == null) {
+                //对文章评论
+                notify.setContent(NOTIFY_ARTICLE_CONTENT);
+                notify.setNotifyUserId(articleService.getArticleById(comment.getArticleId()).getUserId());
+            } else {
+                //对评论回复
+                notify.setContent(NOTIFY_COMMENT_CONTENT);
+                notify.setNotifyUserId(commentService.getCommentById(comment.getParentCommentId()).getUserId());
+            }
+            notifyService.createNotify(notify);
             return ResponseVO.createSuc(comment);
         } else {
             return ResponseVO.createErr(CREATE_COMMENT_ERROR);
@@ -149,4 +166,5 @@ public class CommentController {
         ReturnPageVO<Comment> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
+    //TODO:补充一个给评论点赞的接口
 }

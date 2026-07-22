@@ -2,16 +2,10 @@ package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
-import com.example.pai_demo.model.Article;
-import com.example.pai_demo.model.User;
-import com.example.pai_demo.model.UserFavorite;
-import com.example.pai_demo.model.UserHistory;
+import com.example.pai_demo.model.*;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
-import com.example.pai_demo.service.ArticleService;
-import com.example.pai_demo.service.UserFavoriteService;
-import com.example.pai_demo.service.UserHistoryService;
-import com.example.pai_demo.service.UserService;
+import com.example.pai_demo.service.*;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
@@ -41,6 +35,8 @@ public class UserFavoriteController {
     private ArticleService articleService;
     @Resource
     private UserHistoryService userHistoryService;
+    @Resource
+    private NotifyService notifyService;
 
     @PostMapping()
     @ApiOperation(value = "创建用户收藏", notes = "创建用户收藏")
@@ -58,11 +54,19 @@ public class UserFavoriteController {
         }
         userFavoriteService.createUserFavorite(userFavorite);
         if (userFavorite.getId() != null) {
+            //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(userFavorite.getUserId());
             userHistory.setIsFavorite(1);
             userHistory.setObjectId(userFavorite.getArticleId());
             userHistoryService.createUserHistory(userHistory);
+            //发送通知
+            Notify notify = new Notify();
+            notify.setType(Notify.NOTIFY_FAVORITE);
+            notify.setOperateUserId(userFavorite.getUserId());
+            notify.setContent(NOTIFY_FAVORITE_CONTENT);
+            notify.setNotifyUserId(articleService.getArticleById(userFavorite.getArticleId()).getUserId());
+            notifyService.createNotify(notify);
             return ResponseVO.createSuc(userFavorite);
         } else {
             return ResponseVO.createErr(CREATE_USER_FAVORITE_ERROR);
@@ -80,6 +84,7 @@ public class UserFavoriteController {
         userFavorite.setId(id);
         if (userFavoriteService.updateUserFavoriteSelective(userFavorite) == 1) {
             userFavorite = userFavoriteService.getUserFavoriteById(id);
+            //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(userFavorite.getUserId());
             userHistory.setIsFavorite(2);
@@ -102,6 +107,7 @@ public class UserFavoriteController {
         userFavorite.setId(id);
         if (userFavoriteService.updateUserFavoriteAll(userFavorite) == 1) {
             userFavorite = userFavoriteService.getUserFavoriteById(id);
+            //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(userFavorite.getUserId());
             userHistory.setIsFavorite(2);

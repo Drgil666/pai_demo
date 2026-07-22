@@ -37,14 +37,20 @@ public class Notify extends BaseEntity {
     @ApiModelProperty(value = "通知的消息内容")
     @Column(name = "content", nullable = false)
     private String content;
-    /**
-     * 通知的类型(0-系统,1-评论,2-回复,3-点赞,4-收藏,5-关注)
-     */
-    @ApiModelProperty(value = "通知的类型(0-系统,1-评论,2-回复,3-点赞,4-收藏,5-关注)")
-    private Integer type;
+    public static final Integer NOTIFY_SYSTEM = 0;
     /**
      * 是否已读(0-未读,1-已读)
      */
     @ApiModelProperty(value = "是否已读(0-未读,1-已读)")
     private Integer isRead;
+    public static final Integer NOTIFY_COMMENT = 1;
+    public static final Integer NOTIFY_LIKE = 2;
+    public static final Integer NOTIFY_FAVORITE = 3;
+    public static final Integer NOTIFY_SUBSCRIBE = 4;
+    /**
+     * 通知的类型(0-系统,1-评论,2-点赞,3-收藏,4-关注)
+     */
+    @ApiModelProperty(value = "通知的类型(0-系统,1-评论,2-点赞,3-收藏,4-关注)")
+    private Integer type;
+
 }

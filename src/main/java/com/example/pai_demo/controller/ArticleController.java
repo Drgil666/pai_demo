@@ -103,10 +103,10 @@ public class ArticleController {
     @GetMapping("/user_id")
     @ApiOperation(value = "根据用户id获取文章列表", notes = "根据用户id获取文章列表")
     public ResponseVO<ReturnPageVO<ArticleVO>> getArticleVOListByUserId(@RequestParam("userId") Integer userId,
-                                                                    @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                                    @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                    @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                    @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+                                                                        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                        @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                        @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(userId, ErrorCode.BIZ_PARAM_ILLEGAL, USER_NOT_EXIST_ERROR);
         User user = userService.getUserById(userId);
         if (user == null) {
@@ -118,15 +118,14 @@ public class ArticleController {
         ReturnPageVO<ArticleVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
-    //TODO:把所有获取的Article都改为VO
 
     @GetMapping("/category_id")
     @ApiOperation(value = "根据目录id获取文章列表", notes = "根据目录id获取文章列表")
     public ResponseVO<ReturnPageVO<ArticleVO>> getArticleVOListByCategoryId(@RequestParam("categoryId") Integer categoryId,
-                                                                          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                                          @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                          @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+                                                                            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                            @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                            @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(categoryId, ErrorCode.BIZ_PARAM_ILLEGAL, CATEGORY_NOT_EXIST_ERROR);
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
@@ -138,4 +137,5 @@ public class ArticleController {
         ReturnPageVO<ArticleVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
+    //TODO:补充一个给文章点赞的接口
 }

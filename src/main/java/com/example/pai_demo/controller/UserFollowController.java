@@ -2,11 +2,13 @@ package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
+import com.example.pai_demo.model.Notify;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.UserFollow;
 import com.example.pai_demo.model.UserHistory;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
+import com.example.pai_demo.service.NotifyService;
 import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserFollowService;
 import com.example.pai_demo.service.UserHistoryService;
@@ -37,6 +39,8 @@ public class UserFollowController {
     private TokenService tokenService;
     @Resource
     private UserHistoryService userHistoryService;
+    @Resource
+    private NotifyService notifyService;
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
@@ -48,11 +52,19 @@ public class UserFollowController {
             return ResponseVO.createErr(USER_FOLLOW_EXIST_ERROR);
         }
         if (userFollowService.createUserFollow(userFollow)) {
+            //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(userFollow.getUserId());
             userHistory.setObjectId(userFollow.getFollowId());
             userHistory.setIsSubscribe(1);
             userHistoryService.createUserHistory(userHistory);
+            //创建通知
+            Notify notify = new Notify();
+            notify.setType(Notify.NOTIFY_FAVORITE);
+            notify.setOperateUserId(userFollow.getUserId());
+            notify.setContent(NOTIFY_SUBSCRIBE_CONTENT);
+            notify.setNotifyUserId(userFollow.getFollowId());
+            notifyService.createNotify(notify);
             return ResponseVO.createSuc(userFollow);
         } else {
             return ResponseVO.createErr(CREATE_USER_FOLLOW_ERROR);
@@ -70,6 +82,7 @@ public class UserFollowController {
         userFollow.setId(id);
         if (userFollowService.updateUserFollowSelective(userFollow) == 1) {
             UserFollow newUserFollow = userFollowService.getUserFollowById(id);
+            //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(newUserFollow.getUserId());
             userHistory.setObjectId(newUserFollow.getFollowId());
