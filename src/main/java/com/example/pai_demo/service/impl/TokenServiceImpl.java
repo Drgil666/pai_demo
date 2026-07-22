@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.example.pai_demo.utils.errorDict.GET_TOKEN_ERROR;
+import static com.example.pai_demo.constants.errorDict.GET_TOKEN_ERROR;
 
 /**
  * @author GilbertYoung

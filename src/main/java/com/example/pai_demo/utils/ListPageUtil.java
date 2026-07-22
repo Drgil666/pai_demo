@@ -7,8 +7,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.Data;
 
-import static com.example.pai_demo.utils.errorDict.CURRENT_ERROR;
-import static com.example.pai_demo.utils.errorDict.PAGESIZE_ERROR;
+import static com.example.pai_demo.constants.errorDict.CURRENT_ERROR;
+import static com.example.pai_demo.constants.errorDict.PAGESIZE_ERROR;
 
 /**
  * @author Gilbert

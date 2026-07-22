@@ -22,7 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-import static com.example.pai_demo.utils.errorDict.*;
+import static com.example.pai_demo.constants.NotifyConstant.NOTIFY_SUBSCRIBE_CONTENT;
+import static com.example.pai_demo.constants.errorDict.*;
 
 /**
  * @author GilbertYoung

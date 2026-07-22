@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.example.pai_demo.utils.errorDict.SORTER_ERROR;
+import static com.example.pai_demo.constants.errorDict.SORTER_ERROR;
 
 /**
  * @author Gilbert

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.example.pai_demo.utils.errorDict.*;
+import static com.example.pai_demo.constants.errorDict.*;
 
 /**
  * @author GilbertYoung

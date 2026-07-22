@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.pai_demo.utils.errorDict.*;
+import static com.example.pai_demo.constants.errorDict.*;
 
 /**
  * @author GilbertYoung

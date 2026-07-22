@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-import static com.example.pai_demo.utils.errorDict.USER_NOT_EXIST_ERROR;
+import static com.example.pai_demo.constants.errorDict.USER_NOT_EXIST_ERROR;
 
 /**
  * @author GilbertYoung
