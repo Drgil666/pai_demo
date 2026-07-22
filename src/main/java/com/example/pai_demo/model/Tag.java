@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "tag")
+@ApiModel(value = "文章标签", description = "文章标签")
 public class Tag extends BaseEntity {
     /**
      * 标签名称

@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "user_follow")
+@ApiModel(value = "用户-用户中间表", description = "用户-用户中间表")
 public class UserFollow extends BaseEntity {
     /**
      * 用户id

@@ -1,5 +1,6 @@
 package com.example.pai_demo.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import lombok.Data;
  * @date 2026/07/09 17:32
  */
 @Data
+@ApiModel(value = "RedisUserVO", description = "RedisUserVO")
 public class RedisUserVO {
     /**
      * 用户id

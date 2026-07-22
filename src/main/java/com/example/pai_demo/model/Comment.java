@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +24,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "comment")
+@ApiModel(value = "评论", description = "评论类，支持顶级评论及多级回复")
 public class Comment extends BaseEntity {
     /**
      * 评论对应的文章id

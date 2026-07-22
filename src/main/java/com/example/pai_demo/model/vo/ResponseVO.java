@@ -1,5 +1,6 @@
 package com.example.pai_demo.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@ApiModel(value = "ResponseVO", description = "ResponseVO")
 public class ResponseVO<T> {
     /**
      * 请求码

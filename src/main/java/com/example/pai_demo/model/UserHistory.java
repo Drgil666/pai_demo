@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "user_history")
+@ApiModel(value = "用户操作流水类分为阅读、点赞/取消点赞、收藏/取消收藏、发表/删除评论、关注/取消关注", description = "用户操作流水类分为阅读、点赞/取消点赞、收藏/取消收藏、发表/删除评论、关注/取消关注")
 public class UserHistory extends BaseEntity {
     /**
      * 用户id

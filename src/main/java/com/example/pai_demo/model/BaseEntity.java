@@ -1,5 +1,6 @@
 package com.example.pai_demo.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ import java.util.Date;
  */
 @Data
 @MappedSuperclass // 映射父类，不单独建表
+@ApiModel(value = "BaseEntity")
 public class BaseEntity implements Serializable {
     /**
      * 自增长主键

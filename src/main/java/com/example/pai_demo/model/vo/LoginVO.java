@@ -1,5 +1,6 @@
 package com.example.pai_demo.model.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import lombok.Data;
  * 登录用VO
  */
 @Data
+@ApiModel(value = "登录用VO", description = "登录用VO")
 public class LoginVO {
     /**
      * 用户名
