@@ -1,5 +1,6 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.mapper.ArticleMapper;
@@ -8,6 +9,7 @@ import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.mapper.UserFavoriteMapper;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Tag;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.model.vo.ArticleVO;
@@ -59,6 +61,11 @@ public class ArticleServiceImpl implements ArticleService {
             userStatisticEvent.setUserId(article.getUserId());
             userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE);
             eventPublisher.publishEvent(userStatisticEvent);
+            //更新用户活跃度
+            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
+            activityRankStatisticEvent.setUserId(article.getUserId());
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_LOGIN);
+            eventPublisher.publishEvent(activityRankStatisticEvent);
             return true;
         } else {
             return false;

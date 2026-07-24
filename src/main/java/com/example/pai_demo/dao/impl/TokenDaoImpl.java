@@ -5,10 +5,12 @@ import com.example.pai_demo.dao.TokenDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,8 +70,44 @@ public class TokenDaoImpl implements TokenDao {
      * @return 是否成功
      */
     @Override
-    public Long hIncr(String key, String field, Integer cnt) {
-        return stringRedisTemplate.execute((RedisCallback<Long>) con -> con.hIncrBy(key.getBytes(StandardCharsets.UTF_8), field.getBytes(StandardCharsets.UTF_8), cnt));
+    public void hIncr(String key, String field, Integer cnt) {
+        stringRedisTemplate.execute((RedisCallback<Long>) con -> con.hIncrBy(key.getBytes(StandardCharsets.UTF_8), field.getBytes(StandardCharsets.UTF_8), cnt));
     }
 
+    /**
+     * 为集合setName中的成员member增加cnt
+     *
+     * @param setName 集合名
+     * @param member  成员名
+     * @param cnt     增加的分数
+     * @return
+     */
+    @Override
+    public void zIncr(String setName, String member, Integer cnt) {
+        stringRedisTemplate.opsForZSet().incrementScore(setName, member, cnt);
+    }
+
+    /**
+     * 获取setName中成员member的分值
+     *
+     * @param setName 集合名
+     * @param member  成员名
+     * @return 对应的分数
+     */
+    @Override
+    public Double zScore(String setName, String member) {
+        return stringRedisTemplate.opsForZSet().score(setName, member);
+    }
+
+    /**
+     * 获取setName中前topNum个成员
+     *
+     * @param key    集合名
+     * @param topNum 榜单成员数
+     * @return 返回的集合
+     */
+    @Override
+    public Set<ZSetOperations.TypedTuple<String>> getTopRank(String key, int topNum) {
+        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(key, 0, topNum - 1);
+    }
 }

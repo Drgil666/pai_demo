@@ -1,7 +1,9 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import com.example.pai_demo.model.vo.LoginUserVO;
 import com.example.pai_demo.model.vo.LoginVO;
 import com.example.pai_demo.model.vo.ResponseVO;
@@ -12,6 +14,7 @@ import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +38,8 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Resource
     private TokenService tokenService;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
@@ -123,6 +128,11 @@ public class UserController {
             loginUserVO.setPrivilege(user.getPrivilege());
             loginUserVO.setToken(token);
             loginUserVO.setUserId(user.getId());
+            //更新用户活跃度
+            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
+            activityRankStatisticEvent.setUserId(user.getId());
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_LOGIN);
+            eventPublisher.publishEvent(activityRankStatisticEvent);
             return ResponseVO.createSuc(loginUserVO);
         } else {
             return ResponseVO.createErr(LOGIN_ERROR);

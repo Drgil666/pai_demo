@@ -1,8 +1,10 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.model.Comment;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,11 @@ public class CommentServiceImpl implements CommentService {
             articleStatisticEvent.setArticleId(comment.getArticleId());
             articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT);
             eventPublisher.publishEvent(articleStatisticEvent);
+            //更新用户活跃度
+            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
+            activityRankStatisticEvent.setUserId(comment.getUserId());
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_LOGIN);
+            eventPublisher.publishEvent(activityRankStatisticEvent);
             return true;
         } else {
             return false;

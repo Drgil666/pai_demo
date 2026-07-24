@@ -50,6 +50,6 @@ public class ArticleStatisticEventListener {
                 break;
             default:
         }
+        //TODO:补充一个缓存一致性的定时操作
     }
-
 }
