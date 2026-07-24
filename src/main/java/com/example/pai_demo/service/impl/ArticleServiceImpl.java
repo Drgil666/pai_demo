@@ -1,5 +1,6 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.enums.UserStatisticEventEnum;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.pai_demo.enums.ArticleStatisticEventEnum.*;
+
 /**
  * @author GilbertYoung
  * @date 2026/07/13 20:11
@@ -42,6 +45,8 @@ public class ArticleServiceImpl implements ArticleService {
     private CommentMapper commentMapper;
     @Resource
     private ApplicationEventPublisher eventPublisher;
+    @Resource
+    private TokenDao tokenDao;
 
     /**
      * 创建文章
@@ -194,8 +199,14 @@ public class ArticleServiceImpl implements ArticleService {
         BeanUtils.copyProperties(article, articleVO);
         List<Tag> tagList = articleTagMapper.getTagListByArticleId(article.getId(), keyword);
         articleVO.setArticleTag(tagList);
-        articleVO.setFavoriteCount(userFavoriteMapper.getUserFavoriteCountByArticleId(article.getId()));
-        articleVO.setCommentCount(commentMapper.getCommentCountByArticleId(article.getId()));
+        Long readCount = tokenDao.hScore(ArticleStatisticEvent.ARTICLE_STATISTIC_EVENT_PREFIX + article.getId(), ARTICLE_READ.getMsg());
+        articleVO.setReadCount(readCount);
+        Long likeCount = tokenDao.hScore(ArticleStatisticEvent.ARTICLE_STATISTIC_EVENT_PREFIX + article.getId(), ARTICLE_LIKE.getMsg());
+        articleVO.setLikeCount(likeCount);
+        Long favoriteCount = tokenDao.hScore(ArticleStatisticEvent.ARTICLE_STATISTIC_EVENT_PREFIX + article.getId(), ARTICLE_FAVORITE.getMsg());
+        articleVO.setFavoriteCount(favoriteCount);
+        Long commentCount = tokenDao.hScore(ArticleStatisticEvent.ARTICLE_STATISTIC_EVENT_PREFIX + article.getId(), ARTICLE_COMMENT.getMsg());
+        articleVO.setCommentCount(commentCount);
         return articleVO;
     }
 }

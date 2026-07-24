@@ -26,10 +26,20 @@ public class ArticleVO extends Article {
      * 文章评论
      */
     @ApiModelProperty(value = "文章评论")
-    private Integer commentCount;
+    private Long commentCount;
     /**
      * 文章收藏数
      */
     @ApiModelProperty(value = "文章收藏数")
-    private Integer favoriteCount;
+    private Long favoriteCount;
+    /**
+     * 文章点赞数
+     */
+    @ApiModelProperty(value = "文章点赞数")
+    private Long likeCount;
+    /**
+     * 文章阅读数
+     */
+    @ApiModelProperty(value = "文章阅读数")
+    private Long readCount;
 }

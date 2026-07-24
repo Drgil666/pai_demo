@@ -1,6 +1,7 @@
 package com.example.pai_demo.service;
 
 import com.example.pai_demo.model.Comment;
+import com.example.pai_demo.model.vo.CommentVO;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public interface CommentService {
      * @param keyword   关键词
      * @return 评论列表
      */
-    List<Comment> getCommentListByArticleId(Integer articleId, String keyword);
+    List<CommentVO> getCommentListByArticleId(Integer articleId, String keyword);
 
     /**
      * 根据顶级评论id获取子评论列表
@@ -65,5 +66,5 @@ public interface CommentService {
      */
     Long deleteCommentsByTopCommentId(Integer topCommentId);
 
-    List<Comment> getCommentListByTopCommentId(Integer topCommentId, String keyword);
+    List<CommentVO> getCommentListByTopCommentId(Integer topCommentId, String keyword);
 }

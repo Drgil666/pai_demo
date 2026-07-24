@@ -1,16 +1,27 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.dao.TokenDao;
+import com.example.pai_demo.mapper.ArticleMapper;
+import com.example.pai_demo.mapper.UserFavoriteMapper;
+import com.example.pai_demo.mapper.UserFollowMapper;
 import com.example.pai_demo.mapper.UserMapper;
 import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.event.UserStatisticEvent;
+import com.example.pai_demo.model.vo.UserVO;
 import com.example.pai_demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.example.pai_demo.enums.UserStatisticEventEnum.*;
 
 /**
  * @author GilbertYoung
@@ -21,8 +32,16 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private ArticleMapper articleMapper;
+    @Resource
+    private UserFollowMapper userFollowMapper;
+    @Resource
+    private UserFavoriteMapper userFavoriteMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Resource
+    private TokenDao tokenDao;
 
     /**
      * 创建用户
@@ -99,7 +118,28 @@ public class UserServiceImpl implements UserService {
      * @return 对应的用户信息
      */
     @Override
-    public List<User> getUserListByKeyword(String keyword) {
-        return userMapper.getUserListByKeyword(keyword);
+    public List<UserVO> getUserListByKeyword(String keyword) {
+        List<User> userList = userMapper.getUserListByKeyword(keyword);
+        List<UserVO> userVOList = new ArrayList<>();
+        for (User user : userList) {
+            UserVO userVO = getUserVO(user);
+            userVOList.add(userVO);
+        }
+        return userVOList;
+    }
+
+    @NotNull
+    private UserVO getUserVO(User user) {
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        Long articleCount = tokenDao.hScore(UserStatisticEvent.USER_STATISTIC_EVENT_PREFIX + user.getId(), USER_ARTICLE.getMsg());
+        userVO.setArticleCount(articleCount);
+        Long subscribeCount = tokenDao.hScore(UserStatisticEvent.USER_STATISTIC_EVENT_PREFIX + user.getId(), USER_FOLLOW.getMsg());
+        userVO.setSubscribeCount(subscribeCount);
+        Long followerCount = tokenDao.hScore(UserStatisticEvent.USER_STATISTIC_EVENT_PREFIX + user.getId(), USER_FOLLOWER.getMsg());
+        userVO.setFollowerCount(followerCount);
+        Long favoriteCount = tokenDao.hScore(UserStatisticEvent.USER_STATISTIC_EVENT_PREFIX + user.getId(), USER_FAVORITE.getMsg());
+        userVO.setFavoriteCount(favoriteCount);
+        return userVO;
     }
 }

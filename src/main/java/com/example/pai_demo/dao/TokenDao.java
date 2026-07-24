@@ -44,6 +44,15 @@ public interface TokenDao {
     void hIncr(String key, String field, Integer cnt);
 
     /**
+     * 根据key和域获取值
+     *
+     * @param key   键值
+     * @param field 域
+     * @return 对应的值
+     */
+    Long hScore(String key, String field);
+
+    /**
      * 为集合setName中的成员member增加cnt
      *
      * @param setName 集合名

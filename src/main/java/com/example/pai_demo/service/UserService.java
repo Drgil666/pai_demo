@@ -1,8 +1,7 @@
 package com.example.pai_demo.service;
 
 import com.example.pai_demo.model.User;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.example.pai_demo.model.vo.UserVO;
 
 import java.util.List;
 
@@ -55,5 +54,5 @@ public interface UserService {
      * @param keyword 关键词
      * @return 对应的用户信息
      */
-    List<User> getUserListByKeyword(String keyword);
+    List<UserVO> getUserListByKeyword(String keyword);
 }

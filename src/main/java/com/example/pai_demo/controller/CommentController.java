@@ -4,6 +4,7 @@ import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Comment;
 import com.example.pai_demo.model.Notify;
+import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.ArticleService;
@@ -128,7 +129,7 @@ public class CommentController {
     @GetMapping("/article_id")
     @ApiOperation(value = "根据文章id获取评论列表", notes = "根据文章id获取评论列表")
     @Authorize(Authorize.USER)
-    public ResponseVO<ReturnPageVO<Comment>> getCommentListByArticleId(@RequestParam("articleId") Integer articleId,
+    public ResponseVO<ReturnPageVO<CommentVO>> getCommentListByArticleId(@RequestParam("articleId") Integer articleId,
                                                                        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                        @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -138,16 +139,16 @@ public class CommentController {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
         ListPageUtil.paging(current, pageSize, sorter);
-        List<Comment> commentList = commentService.getCommentListByArticleId(articleId, keyword);
-        PageInfo<Comment> pageInfo = new PageInfo<>(commentList);
-        ReturnPageVO<Comment> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        List<CommentVO> commentList = commentService.getCommentListByArticleId(articleId, keyword);
+        PageInfo<CommentVO> pageInfo = new PageInfo<>(commentList);
+        ReturnPageVO<CommentVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
 
     @GetMapping("/top_comment_id")
     @ApiOperation(value = "根据顶级评论id获取子评论列表", notes = "根据顶级评论id获取子评论列表")
     @Authorize(Authorize.USER)
-    public ResponseVO<ReturnPageVO<Comment>> getCommentListByTopCommentId(@RequestParam("topCommentId") Integer topCommentId,
+    public ResponseVO<ReturnPageVO<CommentVO>> getCommentListByTopCommentId(@RequestParam("topCommentId") Integer topCommentId,
                                                                           @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                           @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -157,9 +158,9 @@ public class CommentController {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }
         ListPageUtil.paging(current, pageSize, sorter);
-        List<Comment> commentList = commentService.getCommentListByTopCommentId(topCommentId, keyword);
-        PageInfo<Comment> pageInfo = new PageInfo<>(commentList);
-        ReturnPageVO<Comment> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        List<CommentVO> commentList = commentService.getCommentListByTopCommentId(topCommentId, keyword);
+        PageInfo<CommentVO> pageInfo = new PageInfo<>(commentList);
+        ReturnPageVO<CommentVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
     //TODO:补充一个给评论点赞的接口

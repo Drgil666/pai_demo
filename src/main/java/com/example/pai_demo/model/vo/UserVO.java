@@ -2,6 +2,7 @@ package com.example.pai_demo.model.vo;
 
 import com.example.pai_demo.model.User;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,22 +12,26 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "UserVO", description = "UserVO")
+@ApiModel(value = "用户VO", description = "用户信息及统计数据")
 public class UserVO extends User {
     /**
      * 发表文章数
      */
-    private Integer articleCount;
+    @ApiModelProperty(value = "发表文章数")
+    private Long articleCount;
     /**
      * 关注数
      */
-    private Integer subscribeCount;
+    @ApiModelProperty(value = "关注数")
+    private Long subscribeCount;
     /**
      * 粉丝数
      */
-    private Integer followerCount;
+    @ApiModelProperty(value = "粉丝数")
+    private Long followerCount;
     /**
      * 收藏文章数
      */
-    private Integer favoriteCount;
+    @ApiModelProperty(value = "收藏文章数")
+    private Long favoriteCount;
 }

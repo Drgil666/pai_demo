@@ -1,19 +1,27 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.model.Comment;
 import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
+import com.example.pai_demo.model.event.CommentStatisticEvent;
+import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.example.pai_demo.enums.CommentStatisticEventEnum.COMMENT_LIKE;
 
 /**
  * @author GilbertYoung
@@ -26,6 +34,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;
     @Resource
     private ApplicationEventPublisher eventPublisher;
+    @Resource
+    private TokenDao tokenDao;
 
     /**
      * 创建评论
@@ -131,8 +141,14 @@ public class CommentServiceImpl implements CommentService {
      * @return 评论列表
      */
     @Override
-    public List<Comment> getCommentListByArticleId(Integer articleId, String keyword) {
-        return commentMapper.getCommentListByArticleId(articleId, keyword);
+    public List<CommentVO> getCommentListByArticleId(Integer articleId, String keyword) {
+        List<CommentVO> commentVOList = new ArrayList<>();
+        List<Comment> commentList = commentMapper.getCommentListByArticleId(articleId, keyword);
+        for (Comment comment : commentList) {
+            CommentVO commentVO = getCommentVO(comment, keyword);
+            commentVOList.add(commentVO);
+        }
+        return commentVOList;
     }
 
     /**
@@ -147,7 +163,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getCommentListByTopCommentId(Integer topCommentId, String keyword) {
-        return commentMapper.getCommentListByTopCommentId(topCommentId, keyword);
+    public List<CommentVO> getCommentListByTopCommentId(Integer topCommentId, String keyword) {
+        List<CommentVO> commentVOList = new ArrayList<>();
+        List<Comment> commentList = commentMapper.getCommentListByTopCommentId(topCommentId, keyword);
+        for (Comment comment : commentList) {
+            CommentVO commentVO = getCommentVO(comment, keyword);
+            commentVOList.add(commentVO);
+        }
+        return commentVOList;
+    }
+
+    @NotNull
+    private CommentVO getCommentVO(Comment comment, String keyword) {
+        CommentVO commentVO = new CommentVO();
+        BeanUtils.copyProperties(commentVO, commentVO);
+        Long likeCount = tokenDao.hScore(CommentStatisticEvent.COMMENT_STATISTIC_EVENT_PREFIX + comment.getId(), COMMENT_LIKE.getMsg());
+        commentVO.setLikeCount(likeCount);
+        return commentVO;
     }
 }

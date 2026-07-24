@@ -4,10 +4,7 @@ import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
-import com.example.pai_demo.model.vo.LoginUserVO;
-import com.example.pai_demo.model.vo.LoginVO;
-import com.example.pai_demo.model.vo.ResponseVO;
-import com.example.pai_demo.model.vo.ReturnPageVO;
+import com.example.pai_demo.model.vo.*;
 import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserService;
 import com.example.pai_demo.utils.ListPageUtil;
@@ -100,15 +97,15 @@ public class UserController {
 
     @GetMapping()
     @ApiOperation(value = "根据昵称查询用户列表", notes = "根据昵称查询用户列表")
-    public ResponseVO<ReturnPageVO<User>> getUserListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                               @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                               @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                               @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+    public ResponseVO<ReturnPageVO<UserVO>> getUserListByKeyword(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                 @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                 @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
 
         ListPageUtil.paging(current, pageSize, sorter);
-        List<User> userList = userService.getUserListByKeyword(keyword);
-        PageInfo<User> pageInfo = new PageInfo<>(userList);
-        ReturnPageVO<User> returnPageVO = ListPageUtil.returnPage(pageInfo);
+        List<UserVO> userList = userService.getUserListByKeyword(keyword);
+        PageInfo<UserVO> pageInfo = new PageInfo<>(userList);
+        ReturnPageVO<UserVO> returnPageVO = ListPageUtil.returnPage(pageInfo);
         return ResponseVO.createSuc(returnPageVO);
     }
 

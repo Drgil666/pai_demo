@@ -83,6 +83,22 @@ public class TokenDaoImpl implements TokenDao {
     }
 
     /**
+     * 根据key和域获取值
+     *
+     * @param key   键值
+     * @param field 域
+     * @return 对应的值
+     */
+    @Override
+    public Long hScore(String key, String field) {
+        String res = stringRedisTemplate.execute((RedisCallback<String>) conn -> {
+            byte[] bytes = conn.hGet(key.getBytes(StandardCharsets.UTF_8), field.getBytes(StandardCharsets.UTF_8));
+            return bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null;
+        });
+        return res == null ? 0L : Long.parseLong(res);
+    }
+
+    /**
      * 为集合setName中的成员member增加cnt
      *
      * @param setName 集合名
