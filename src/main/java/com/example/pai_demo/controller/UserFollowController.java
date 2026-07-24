@@ -98,12 +98,12 @@ public class UserFollowController {
     @GetMapping()
     @ApiOperation(value = "根据昵称查询关注用户列表", notes = "根据昵称查询关注用户列表")
     @Authorize(value = Authorize.USER)
-    public ResponseVO<ReturnPageVO<User>> getFollowUserListByUserId(@RequestHeader(value = "token", required = false) String token,
+    public ResponseVO<ReturnPageVO<User>> getFollowUserListByUserId(@RequestHeader(value = "Authorization", required = false) String token,
                                                                     @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                                                     @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
                                                                     @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                                     @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
-        Integer userId = tokenService.getUserIdByToken(token);
+        Integer userId = tokenService.getUserIdByToken(token.substring(7));
         ListPageUtil.paging(current, pageSize, sorter);
         List<User> userList = userFollowService.getFollowUserListByUserId(userId, keyword);
         PageInfo<User> pageInfo = new PageInfo<>(userList);

@@ -4,13 +4,11 @@ import com.example.pai_demo.annoations.Authorize;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Comment;
 import com.example.pai_demo.model.Notify;
+import com.example.pai_demo.model.UserHistory;
 import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
-import com.example.pai_demo.service.ArticleService;
-import com.example.pai_demo.service.CommentService;
-import com.example.pai_demo.service.NotifyService;
-import com.example.pai_demo.service.UserService;
+import com.example.pai_demo.service.*;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
@@ -42,6 +40,8 @@ public class CommentController {
     private UserService userService;
     @Resource
     private NotifyService notifyService;
+    @Resource
+    private UserHistoryService userHistoryService;
 
     @PostMapping()
     @ApiOperation(value = "创建评论", notes = "创建评论")
@@ -74,6 +74,12 @@ public class CommentController {
                 notify.setNotifyUserId(commentService.getCommentById(comment.getParentCommentId()).getUserId());
             }
             notifyService.createNotify(notify);
+            //创建用户流水
+            UserHistory userHistory = new UserHistory();
+            userHistory.setUserId(comment.getUserId());
+            userHistory.setObjectId(comment.getId());
+            userHistory.setIsComment(1);
+            userHistoryService.createUserHistory(userHistory);
             return ResponseVO.createSuc(comment);
         } else {
             return ResponseVO.createErr(CREATE_COMMENT_ERROR);
@@ -89,7 +95,16 @@ public class CommentController {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }
         comment.setId(id);
+        Comment backup = commentService.getCommentById(id);
         if (commentService.updateCommentSelective(comment) == 1) {
+            if (comment.getIsDelete() == 1) {
+                //创建用户流水
+                UserHistory userHistory = new UserHistory();
+                userHistory.setUserId(backup.getUserId());
+                userHistory.setObjectId(backup.getId());
+                userHistory.setIsComment(2);
+                userHistoryService.createUserHistory(userHistory);
+            }
             Comment result = commentService.getCommentById(id);
             return ResponseVO.createSuc(result);
         } else {
@@ -105,8 +120,16 @@ public class CommentController {
         if (commentService.getCommentById(id) == null) {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }
-        comment.setId(id);
-        if (commentService.updateCommentAll(comment) == 1) {
+        Comment backup = commentService.getCommentById(id);
+        if (commentService.updateCommentSelective(comment) == 1) {
+            if (comment.getIsDelete() == 1) {
+                //创建用户流水
+                UserHistory userHistory = new UserHistory();
+                userHistory.setUserId(backup.getUserId());
+                userHistory.setObjectId(backup.getId());
+                userHistory.setIsComment(2);
+                userHistoryService.createUserHistory(userHistory);
+            }
             Comment result = commentService.getCommentById(id);
             return ResponseVO.createSuc(result);
         } else {
@@ -130,10 +153,10 @@ public class CommentController {
     @ApiOperation(value = "根据文章id获取评论列表", notes = "根据文章id获取评论列表")
     @Authorize(Authorize.USER)
     public ResponseVO<ReturnPageVO<CommentVO>> getCommentListByArticleId(@RequestParam("articleId") Integer articleId,
-                                                                       @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                                       @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                       @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                       @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+                                                                         @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                         @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                         @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(articleId, ErrorCode.BIZ_PARAM_ILLEGAL, ARTICLE_NOT_EXIST_ERROR);
         if (articleService.getArticleById(articleId) == null) {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
@@ -149,10 +172,10 @@ public class CommentController {
     @ApiOperation(value = "根据顶级评论id获取子评论列表", notes = "根据顶级评论id获取子评论列表")
     @Authorize(Authorize.USER)
     public ResponseVO<ReturnPageVO<CommentVO>> getCommentListByTopCommentId(@RequestParam("topCommentId") Integer topCommentId,
-                                                                          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                                                                          @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
-                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                                          @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
+                                                                            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                                            @RequestParam(value = "current", required = false, defaultValue = "1") Integer current,
+                                                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                                            @RequestParam(value = "sorter", required = false, defaultValue = "{\"update_time\":\"descend\"}") String sorter) {
         AssertionUtil.notNull(topCommentId, ErrorCode.BIZ_PARAM_ILLEGAL, COMMENT_NOT_EXIST_ERROR);
         if (commentService.getCommentById(topCommentId) == null) {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
