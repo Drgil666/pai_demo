@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * @author GilbertYoung
@@ -20,10 +19,6 @@ import java.time.format.DateTimeFormatter;
  */
 @Component
 public class ActivityRankStatisticEventListener {
-    private static final String DAILY_KEY = "daily";
-    private static final String MONTHLY_KEY = "monthly";
-    private static final DateTimeFormatter DAILY_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private static final DateTimeFormatter MONTHLY_FORMAT = DateTimeFormatter.ofPattern("yyyyMM");
     private static final Integer USER_LOGIN_SCORE = 1;
     private static final Integer USER_LIKE_SCORE = 2;
     private static final Integer USER_COMMENT_SCORE = 3;
@@ -31,12 +26,13 @@ public class ActivityRankStatisticEventListener {
     @Resource
     private TokenDao tokenDao;
 
+
     @EventListener(classes = ActivityRankStatisticEvent.class)
     @Async
     public void activityRankStatisticEventListener(ActivityRankStatisticEvent event) {
         LocalDate now = LocalDate.now();
-        String dailyKey = ActivityRankStatisticEvent.ACTIVITY_RANK_STATISTIC_EVENT_PREFIX + ":" + DAILY_KEY + ":" + DAILY_FORMAT.format(now);
-        String monthlyKey = ActivityRankStatisticEvent.ACTIVITY_RANK_STATISTIC_EVENT_PREFIX + ":" + MONTHLY_KEY + ":" + MONTHLY_FORMAT.format(now);
+        String dailyKey = tokenDao.getDailyKey();
+        String monthlyKey = tokenDao.getMonthlyKey();
         switch (event.getType()) {
             case USER_LOGIN:
                 tokenDao.zIncr(dailyKey, event.getUserId().toString(), USER_LOGIN_SCORE);

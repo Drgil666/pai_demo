@@ -20,5 +20,5 @@ public class UserActivityVO extends User {
     /**
      * 用户活跃度
      */
-    private Integer score;
+    private Double score;
 }

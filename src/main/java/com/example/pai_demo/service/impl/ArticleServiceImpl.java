@@ -64,7 +64,7 @@ public class ArticleServiceImpl implements ArticleService {
             //更新用户活跃度
             ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
             activityRankStatisticEvent.setUserId(article.getUserId());
-            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_LOGIN);
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_PUBLISH);
             eventPublisher.publishEvent(activityRankStatisticEvent);
             return true;
         } else {

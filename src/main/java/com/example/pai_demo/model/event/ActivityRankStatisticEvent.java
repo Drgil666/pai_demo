@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ActivityRankStatisticEvent {
-    public static final String ACTIVITY_RANK_STATISTIC_EVENT_PREFIX = "activity_rank_statistic:";
+    public static final String ACTIVITY_RANK_STATISTIC_EVENT_PREFIX = "activity_rank_statistic";
     private Integer userId;
     private ActivityRankStatisticEventEnum type;
 

@@ -69,4 +69,18 @@ public interface TokenDao {
      * @return 返回的集合
      */
     Set<ZSetOperations.TypedTuple<String>> getTopRank(String key, int topNum);
+
+    /**
+     * 获取当日排行榜的key
+     *
+     * @return 当日排行榜的key
+     */
+    String getDailyKey();
+
+    /**
+     * 获取当月排行榜的key
+     *
+     * @return 当月排行榜的key
+     */
+    String getMonthlyKey();
 }

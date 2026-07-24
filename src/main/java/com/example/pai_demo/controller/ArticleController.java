@@ -138,4 +138,5 @@ public class ArticleController {
         return ResponseVO.createSuc(returnPageVO);
     }
     //TODO:补充一个给文章点赞的接口
+    //TODO:点赞要用MQ来实现！
 }

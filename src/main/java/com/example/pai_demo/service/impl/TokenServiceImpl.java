@@ -5,14 +5,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.exception.ErrorException;
+import com.example.pai_demo.mapper.UserMapper;
+import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.vo.RedisUserVO;
+import com.example.pai_demo.model.vo.UserActivityVO;
 import com.example.pai_demo.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import static com.example.pai_demo.constants.errorDict.GET_TOKEN_ERROR;
 
@@ -25,6 +29,79 @@ import static com.example.pai_demo.constants.errorDict.GET_TOKEN_ERROR;
 public class TokenServiceImpl implements TokenService {
     @Resource
     private TokenDao tokenDao;
+    @Resource
+    private UserMapper userMapper;
+
+    /**
+     * 获取用户当天的活跃度
+     *
+     * @param userId 用户id
+     * @return 用户的活跃度
+     */
+    @Override
+    public Double getUserDailyActivityRank(Integer userId) {
+        return tokenDao.zScore(tokenDao.getDailyKey(), userId.toString());
+
+    }
+
+    /**
+     * 获取用户当月活跃度
+     *
+     * @param userId 用户id
+     * @return 用户的活跃度
+     */
+    @Override
+    public Double getUserMonthlyActivityRank(Integer userId) {
+        return tokenDao.zScore(tokenDao.getMonthlyKey(), userId.toString());
+    }
+
+    /**
+     * 获取每日活跃度前size个最高活跃度的成员
+     *
+     * @param size 成员数量
+     * @return 成员信息
+     */
+    @Override
+    public List<UserActivityVO> getDailyActivityRank(Integer size) {
+        Set<ZSetOperations.TypedTuple<String>> result = tokenDao.getTopRank(tokenDao.getDailyKey(), size);
+        List<UserActivityVO> userActivityVOList = new ArrayList<>();
+        int index = 1;
+        for (ZSetOperations.TypedTuple<String> tuple : result) {
+            String userId = tuple.getValue();
+            Double score = tuple.getScore();
+            User user = userMapper.getUserById(Integer.valueOf(userId));
+            UserActivityVO userActivityVO = new UserActivityVO();
+            BeanUtils.copyProperties(user, userActivityVO);
+            userActivityVO.setRank(index++);
+            userActivityVO.setScore(score);
+            userActivityVOList.add(userActivityVO);
+        }
+        return userActivityVOList;
+    }
+
+    /**
+     * 获取每月活跃度前size个最高活跃度的成员
+     *
+     * @param size 成员数量
+     * @return 成员信息
+     */
+    @Override
+    public List<UserActivityVO> getMonthlyActivityRank(Integer size) {
+        Set<ZSetOperations.TypedTuple<String>> result = tokenDao.getTopRank(tokenDao.getDailyKey(), size);
+        List<UserActivityVO> userActivityVOList = new ArrayList<>();
+        int index = 1;
+        for (ZSetOperations.TypedTuple<String> tuple : result) {
+            String userId = tuple.getValue();
+            Double score = tuple.getScore();
+            User user = userMapper.getUserById(Integer.valueOf(userId));
+            UserActivityVO userActivityVO = new UserActivityVO();
+            BeanUtils.copyProperties(user, userActivityVO);
+            userActivityVO.setRank(index++);
+            userActivityVO.setScore(score);
+            userActivityVOList.add(userActivityVO);
+        }
+        return userActivityVOList;
+    }
 
     /**
      * 根据用户id生成登录token

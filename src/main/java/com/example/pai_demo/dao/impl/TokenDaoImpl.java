@@ -2,6 +2,7 @@ package com.example.pai_demo.dao.impl;
 
 
 import com.example.pai_demo.dao.TokenDao;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +26,11 @@ public class TokenDaoImpl implements TokenDao {
     private StringRedisTemplate stringRedisTemplate;
     @Value("${redis.expire.time}")
     private Long expireTime;
+
+    public static final String DAILY_KEY = "daily";
+    public static final String MONTHLY_KEY = "monthly";
+    public static final DateTimeFormatter DAILY_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    public static final DateTimeFormatter MONTHLY_FORMAT = DateTimeFormatter.ofPattern("yyyyMM");
 
     /**
      * 为redis设置键值对
@@ -109,5 +117,27 @@ public class TokenDaoImpl implements TokenDao {
     @Override
     public Set<ZSetOperations.TypedTuple<String>> getTopRank(String key, int topNum) {
         return stringRedisTemplate.opsForZSet().reverseRangeWithScores(key, 0, topNum - 1);
+    }
+
+    /**
+     * 获取当日排行榜的key
+     *
+     * @return 当日排行榜的key
+     */
+    @Override
+    public String getDailyKey() {
+        LocalDate now = LocalDate.now();
+        return ActivityRankStatisticEvent.ACTIVITY_RANK_STATISTIC_EVENT_PREFIX + ":" + DAILY_KEY + ":" + DAILY_FORMAT.format(now);
+    }
+
+    /**
+     * 获取当月排行榜的key
+     *
+     * @return 当月排行榜的key
+     */
+    @Override
+    public String getMonthlyKey() {
+        LocalDate now = LocalDate.now();
+        return ActivityRankStatisticEvent.ACTIVITY_RANK_STATISTIC_EVENT_PREFIX + ":" + MONTHLY_KEY + ":" + MONTHLY_FORMAT.format(now);
     }
 }

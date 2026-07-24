@@ -26,14 +26,6 @@ public interface TokenService {
     Integer getUserIdByToken(String token);
 
     /**
-     * 为用户添加活跃度
-     *
-     * @param userId 用户id
-     * @param score  上升的活跃值
-     */
-    void addUserActivityRank(Integer userId, Integer score);
-
-    /**
      * 获取用户当天的活跃度
      *
      * @param userId 用户id

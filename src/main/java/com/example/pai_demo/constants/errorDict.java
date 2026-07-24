@@ -54,6 +54,8 @@ public class errorDict {
     public static final String CREATE_USER_FAVORITE_ERROR = "收藏失败！";
     public static final String USER_FAVORITE_NOT_EXIST_ERROR = "未收藏该文章！";
     public static final String USER_FAVORITE_EXIST_ERROR = "该文章已收藏！";
+    //ActivityRank相关
+    public static final String ACTIVITY_RANK_ERROR = "获取排行榜失败！";
     //通用相关
     public static final String ID_NULL_ERROR = "id不可为空！";
     public static final String UPDATE_ERROR = "更新失败！";

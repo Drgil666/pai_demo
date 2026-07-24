@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
             //更新用户活跃度
             ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
             activityRankStatisticEvent.setUserId(comment.getUserId());
-            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_LOGIN);
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_COMMENT);
             eventPublisher.publishEvent(activityRankStatisticEvent);
             return true;
         } else {
