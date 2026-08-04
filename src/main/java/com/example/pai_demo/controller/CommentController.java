@@ -1,6 +1,7 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.annoations.CurrentUser;
 import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
 import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.exception.ErrorCode;
@@ -49,9 +50,6 @@ public class CommentController {
     private UserHistoryService userHistoryService;
     @Resource
     private ApplicationEventPublisher eventPublisher;
-    @Resource
-    private TokenService tokenService;
-
     @PostMapping()
     @ApiOperation(value = "创建评论", notes = "创建评论")
     @Authorize(Authorize.USER)
@@ -109,10 +107,9 @@ public class CommentController {
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新评论", notes = "增量更新评论")
     @Authorize(Authorize.USER)
-    public ResponseVO<Comment> updateCommentSelective(@RequestHeader(value = "Authorization") String token,
+    public ResponseVO<Comment> updateCommentSelective(@CurrentUser Integer userId,
                                                       @PathVariable(name = "id") Integer id,
                                                       @RequestBody Comment comment) {
-        Integer userId = tokenService.getUserIdByToken(token.substring(7));
         if (commentService.getCommentById(id) == null) {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }

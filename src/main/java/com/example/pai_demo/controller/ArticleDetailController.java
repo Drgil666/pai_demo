@@ -1,6 +1,7 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.annoations.CurrentUser;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.ArticleDetail;
 import com.example.pai_demo.model.UserHistory;
@@ -8,7 +9,6 @@ import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.ArticleDetailService;
 import com.example.pai_demo.service.ArticleService;
-import com.example.pai_demo.service.TokenService;
 import com.example.pai_demo.service.UserHistoryService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
@@ -35,8 +35,6 @@ public class ArticleDetailController {
     private ArticleDetailService articleDetailService;
     @Resource
     private ArticleService articleService;
-    @Resource
-    private TokenService tokenService;
     @Resource
     private UserHistoryService userHistoryService;
 
@@ -90,8 +88,7 @@ public class ArticleDetailController {
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取文章内容", notes = "根据id获取文章内容")
     public ResponseVO<ArticleDetail> getArticleDetailById(@PathVariable(name = "id") Integer id,
-                                                          @RequestHeader(value = "Authorization", required = false) String token) {
-        Integer userId = tokenService.getUserIdByToken(token.substring(7));
+                                                          @CurrentUser Integer userId) {
         ArticleDetail articleDetail = articleDetailService.getArticleDetailById(id);
         if (articleDetail != null) {
             //创建用户流水

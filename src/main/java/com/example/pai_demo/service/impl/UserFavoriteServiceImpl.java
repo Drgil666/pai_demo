@@ -5,7 +5,6 @@ import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.UserFavorite;
 import com.example.pai_demo.service.UserFavoriteService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,8 +20,6 @@ import java.util.List;
 public class UserFavoriteServiceImpl implements UserFavoriteService {
     @Resource
     private UserFavoriteMapper userFavoriteMapper;
-    @Resource
-    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 创建用户收藏
