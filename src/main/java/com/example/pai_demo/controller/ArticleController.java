@@ -1,10 +1,16 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
+import com.example.pai_demo.enums.ArticleStatisticEventEnum;
+import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Category;
 import com.example.pai_demo.model.User;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
+import com.example.pai_demo.model.event.ArticleStatisticEvent;
+import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.model.vo.ArticleVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
@@ -17,6 +23,7 @@ import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,6 +48,8 @@ public class ArticleController {
     private UserService userService;
     @Resource
     private CategoryService categoryService;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     @PostMapping()
     @ApiOperation(value = "创建文章", notes = "创建文章")
@@ -51,6 +60,16 @@ public class ArticleController {
         }
         articleService.createArticle(article);
         if (article.getId() != null) {
+            //创建文章时redis同步缓存
+            UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+            userStatisticEvent.setUserId(article.getUserId());
+            userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE);
+            eventPublisher.publishEvent(userStatisticEvent);
+            //更新用户活跃度
+            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
+            activityRankStatisticEvent.setUserId(article.getUserId());
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_PUBLISH);
+            eventPublisher.publishEvent(activityRankStatisticEvent);
             return ResponseVO.createSuc(article);
         } else {
             return ResponseVO.createErr(CREATE_ARTICLE_ERROR);
@@ -66,7 +85,15 @@ public class ArticleController {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
         article.setId(id);
+        Article backup = articleService.getArticleById(article.getId());
         if (articleService.updateArticleSelective(article) == 1) {
+            if (article.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+            }
             return ResponseVO.createSuc(articleService.getArticleById(id));
         } else {
             return ResponseVO.createErr(UPDATE_ERROR);
@@ -82,7 +109,15 @@ public class ArticleController {
             return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
         }
         article.setId(id);
+        Article backup = articleService.getArticleById(article.getId());
         if (articleService.updateArticleAll(article) == 1) {
+            if (article.getIsDelete() == 1) {
+                //删除文章时,修改对应数据
+                UserStatisticEvent userStatisticEvent = new UserStatisticEvent();
+                userStatisticEvent.setUserId(backup.getUserId());
+                userStatisticEvent.setType(UserStatisticEventEnum.USER_ARTICLE_CANCEL);
+                eventPublisher.publishEvent(userStatisticEvent);
+            }
             return ResponseVO.createSuc(articleService.getArticleById(id));
         } else {
             return ResponseVO.createErr(UPDATE_ERROR);
@@ -93,11 +128,12 @@ public class ArticleController {
     @ApiOperation(value = "根据id获取文章", notes = "根据id获取文章")
     public ResponseVO<ArticleVO> getArticleVOById(@PathVariable(name = "id") Integer id) {
         ArticleVO articleVO = articleService.getArticleVOById(id);
-        if (articleVO != null) {
-            return ResponseVO.createSuc(articleVO);
-        } else {
-            return ResponseVO.createErr(ARTICLE_NOT_EXIST_ERROR);
-        }
+        //阅读文章时redis同步缓存
+        ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+        articleStatisticEvent.setArticleId(articleVO.getId());
+        articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_READ);
+        eventPublisher.publishEvent(articleStatisticEvent);
+        return ResponseVO.createSuc(articleVO);
     }
 
     @GetMapping("/user_id")

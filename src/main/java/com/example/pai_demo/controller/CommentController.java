@@ -1,10 +1,14 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
+import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Comment;
 import com.example.pai_demo.model.Notify;
 import com.example.pai_demo.model.UserHistory;
+import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
+import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
@@ -14,6 +18,7 @@ import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,6 +47,8 @@ public class CommentController {
     private NotifyService notifyService;
     @Resource
     private UserHistoryService userHistoryService;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     @PostMapping()
     @ApiOperation(value = "创建评论", notes = "创建评论")
@@ -61,6 +68,17 @@ public class CommentController {
         }
         commentService.createComment(comment);
         if (comment.getId() != null) {
+            //创建评论时，同步更新缓存
+            ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+            articleStatisticEvent.setArticleId(comment.getArticleId());
+            articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT);
+            eventPublisher.publishEvent(articleStatisticEvent);
+            //更新用户活跃度
+            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
+            activityRankStatisticEvent.setUserId(comment.getUserId());
+            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_COMMENT);
+            eventPublisher.publishEvent(activityRankStatisticEvent);
+            //创建通知
             Notify notify = new Notify();
             notify.setType(Notify.NOTIFY_COMMENT);
             notify.setOperateUserId(comment.getUserId());
@@ -98,6 +116,14 @@ public class CommentController {
         Comment backup = commentService.getCommentById(id);
         if (commentService.updateCommentSelective(comment) == 1) {
             if (comment.getIsDelete() == 1) {
+                Long cnt = commentService.deleteCommentsByTopCommentId(comment.getId());
+                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
+                for (long i = 0L; i <= cnt; i++) {
+                    eventPublisher.publishEvent(articleStatisticEvent);
+                }
                 //创建用户流水
                 UserHistory userHistory = new UserHistory();
                 userHistory.setUserId(backup.getUserId());
@@ -121,8 +147,16 @@ public class CommentController {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }
         Comment backup = commentService.getCommentById(id);
-        if (commentService.updateCommentSelective(comment) == 1) {
+        if (commentService.updateCommentAll(comment) == 1) {
             if (comment.getIsDelete() == 1) {
+                Long cnt = commentService.deleteCommentsByTopCommentId(comment.getId());
+                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
+                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
+                articleStatisticEvent.setArticleId(backup.getArticleId());
+                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
+                for (long i = 0L; i < cnt; i++) {
+                    eventPublisher.publishEvent(articleStatisticEvent);
+                }
                 //创建用户流水
                 UserHistory userHistory = new UserHistory();
                 userHistory.setUserId(backup.getUserId());

@@ -1,19 +1,14 @@
 package com.example.pai_demo.service.impl;
 
 import com.example.pai_demo.dao.TokenDao;
-import com.example.pai_demo.enums.ActivityRankStatisticEventEnum;
-import com.example.pai_demo.enums.ArticleStatisticEventEnum;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.model.Comment;
-import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
-import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.model.event.CommentStatisticEvent;
 import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,8 +28,6 @@ public class CommentServiceImpl implements CommentService {
     @Resource
     private CommentMapper commentMapper;
     @Resource
-    private ApplicationEventPublisher eventPublisher;
-    @Resource
     private TokenDao tokenDao;
 
     /**
@@ -48,21 +41,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setIsDelete(0);
         comment.setCreateTime(new Date());
         comment.setUpdateTime(comment.getCreateTime());
-        if (commentMapper.createComment(comment)) {
-            //创建评论时，同步更新缓存
-            ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
-            articleStatisticEvent.setArticleId(comment.getArticleId());
-            articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT);
-            eventPublisher.publishEvent(articleStatisticEvent);
-            //更新用户活跃度
-            ActivityRankStatisticEvent activityRankStatisticEvent = new ActivityRankStatisticEvent();
-            activityRankStatisticEvent.setUserId(comment.getUserId());
-            activityRankStatisticEvent.setType(ActivityRankStatisticEventEnum.USER_COMMENT);
-            eventPublisher.publishEvent(activityRankStatisticEvent);
-            return true;
-        } else {
-            return false;
-        }
+        return commentMapper.createComment(comment);
     }
 
     /**
@@ -73,24 +52,8 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public Long updateCommentSelective(Comment comment) {
-        Comment backup = commentMapper.getCommentById(comment.getId());
         comment.setUpdateTime(new Date());
-        Long result = commentMapper.updateCommentSelective(comment);
-        if (result != 0) {
-            if (comment.getIsDelete() == 1) {
-                Long cnt = commentMapper.deleteCommentsByTopCommentId(comment.getId());
-                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
-                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
-                articleStatisticEvent.setArticleId(backup.getArticleId());
-                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
-                for (long i = 0L; i <= cnt; i++) {
-                    eventPublisher.publishEvent(articleStatisticEvent);
-                }
-            }
-            return result;
-        } else {
-            return 0L;
-        }
+        return commentMapper.updateCommentSelective(comment);
     }
 
     /**
@@ -101,25 +64,8 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public Long updateCommentAll(Comment comment) {
-        Comment backup = commentMapper.getCommentById(comment.getId());
         comment.setUpdateTime(new Date());
-        Long result = commentMapper.updateCommentAll(comment);
-        if (result != 0) {
-            comment = commentMapper.getCommentById(comment.getId());
-            if (comment.getIsDelete() == 1) {
-                Long cnt = commentMapper.deleteCommentsByTopCommentId(comment.getId());
-                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
-                ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
-                articleStatisticEvent.setArticleId(backup.getArticleId());
-                articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
-                for (long i = 0L; i < cnt; i++) {
-                    eventPublisher.publishEvent(articleStatisticEvent);
-                }
-            }
-            return result;
-        } else {
-            return 0L;
-        }
+        return commentMapper.updateCommentAll(comment);
     }
 
     /**
