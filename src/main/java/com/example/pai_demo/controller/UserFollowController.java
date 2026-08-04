@@ -1,11 +1,13 @@
 package com.example.pai_demo.controller;
 
 import com.example.pai_demo.annoations.Authorize;
+import com.example.pai_demo.enums.UserStatisticEventEnum;
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.Notify;
 import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.UserFollow;
 import com.example.pai_demo.model.UserHistory;
+import com.example.pai_demo.model.event.UserStatisticEvent;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
 import com.example.pai_demo.service.NotifyService;
@@ -17,6 +19,7 @@ import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,6 +45,8 @@ public class UserFollowController {
     private UserHistoryService userHistoryService;
     @Resource
     private NotifyService notifyService;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
     @PostMapping()
     @ApiOperation(value = "创建用户", notes = "创建用户")
@@ -53,6 +58,15 @@ public class UserFollowController {
             return ResponseVO.createErr(USER_FOLLOW_EXIST_ERROR);
         }
         if (userFollowService.createUserFollow(userFollow)) {
+            //关注用户时redis同步缓存,为双方用户都更新统计
+            UserStatisticEvent userStatisticEvent1 = new UserStatisticEvent();
+            userStatisticEvent1.setUserId(userFollow.getUserId());
+            userStatisticEvent1.setType(UserStatisticEventEnum.USER_FOLLOW);
+            eventPublisher.publishEvent(userStatisticEvent1);
+            UserStatisticEvent userStatisticEvent2 = new UserStatisticEvent();
+            userStatisticEvent2.setUserId(userFollow.getFollowId());
+            userStatisticEvent2.setType(UserStatisticEventEnum.USER_FOLLOWER);
+            eventPublisher.publishEvent(userStatisticEvent2);
             //创建用户操作流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(userFollow.getUserId());

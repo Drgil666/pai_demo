@@ -49,6 +49,8 @@ public class CommentController {
     private UserHistoryService userHistoryService;
     @Resource
     private ApplicationEventPublisher eventPublisher;
+    @Resource
+    private TokenService tokenService;
 
     @PostMapping()
     @ApiOperation(value = "创建评论", notes = "创建评论")
@@ -107,8 +109,10 @@ public class CommentController {
     @PatchMapping("/{id}")
     @ApiOperation(value = "增量更新评论", notes = "增量更新评论")
     @Authorize(Authorize.USER)
-    public ResponseVO<Comment> updateCommentSelective(@PathVariable(name = "id") Integer id,
+    public ResponseVO<Comment> updateCommentSelective(@RequestHeader(value = "Authorization") String token,
+                                                      @PathVariable(name = "id") Integer id,
                                                       @RequestBody Comment comment) {
+        Integer userId = tokenService.getUserIdByToken(token.substring(7));
         if (commentService.getCommentById(id) == null) {
             return ResponseVO.createErr(COMMENT_NOT_EXIST_ERROR);
         }

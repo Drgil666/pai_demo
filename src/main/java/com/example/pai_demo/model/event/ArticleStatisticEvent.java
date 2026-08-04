@@ -13,6 +13,5 @@ import lombok.EqualsAndHashCode;
 public class ArticleStatisticEvent {
     public static final String ARTICLE_STATISTIC_EVENT_PREFIX = "article_statistic_";
     private Integer articleId;
-    private Integer userId;
     private ArticleStatisticEventEnum type;
 }
