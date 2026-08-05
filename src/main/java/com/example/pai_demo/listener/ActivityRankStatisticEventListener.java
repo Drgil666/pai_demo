@@ -1,56 +1,71 @@
 package com.example.pai_demo.listener;
 
+import com.alibaba.fastjson.JSON;
 import com.example.pai_demo.dao.TokenDao;
+import com.example.pai_demo.model.StatEventMessage;
 import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
+import com.example.pai_demo.utils.SnowflakeIdUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 
-/**
- * @author GilbertYoung
- * @date 2026/07/22 15:56
- */
+import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_ACTIVITY;
 
-/**
- * 用户活跃度监听类，监听活跃度
- */
 @Component
+@Slf4j
 public class ActivityRankStatisticEventListener {
-    private static final Integer USER_LOGIN_SCORE = 1;
-    private static final Integer USER_LIKE_SCORE = 2;
-    private static final Integer USER_COMMENT_SCORE = 3;
-    private static final Integer USER_PUBLISH_SCORE = 10;
+    private static final int RETRY_TIMES = 3;
+    private static final long RETRY_DELAY_MS = 2000;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
     @Resource
     private TokenDao tokenDao;
-
 
     @EventListener(classes = ActivityRankStatisticEvent.class)
     @Async
     public void activityRankStatisticEventListener(ActivityRankStatisticEvent event) {
-        LocalDate now = LocalDate.now();
+        StatEventMessage msg = new StatEventMessage(SnowflakeIdUtil.generateId(),
+                event.getType().name(), event.getUserId());
+        for (int i = 0; i < RETRY_TIMES; i++) {
+            try {
+                rocketMQTemplate.convertAndSend(TOPIC_STAT_ACTIVITY, msg);
+                log.info("Sent: {}", JSON.toJSONString(msg));
+                return;
+            } catch (Exception e) {
+                if (i < RETRY_TIMES - 1) {
+                    try {
+                        Thread.sleep(RETRY_DELAY_MS);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+        }
+        log.warn("MQ send failed, fallback to Redis");
         String dailyKey = tokenDao.getDailyKey();
         String monthlyKey = tokenDao.getMonthlyKey();
-        switch (event.getType()) {
-            case USER_LOGIN:
-                tokenDao.zIncr(dailyKey, event.getUserId().toString(), USER_LOGIN_SCORE);
-                tokenDao.zIncr(monthlyKey, event.getUserId().toString(), USER_LOGIN_SCORE);
-                break;
-            case USER_LIKE:
-                tokenDao.zIncr(dailyKey, event.getUserId().toString(), USER_LIKE_SCORE);
-                tokenDao.zIncr(monthlyKey, event.getUserId().toString(), USER_LIKE_SCORE);
-                break;
-            case USER_COMMENT:
-                tokenDao.zIncr(dailyKey, event.getUserId().toString(), USER_COMMENT_SCORE);
-                tokenDao.zIncr(monthlyKey, event.getUserId().toString(), USER_COMMENT_SCORE);
-                break;
-            case USER_PUBLISH:
-                tokenDao.zIncr(dailyKey, event.getUserId().toString(), USER_PUBLISH_SCORE);
-                tokenDao.zIncr(monthlyKey, event.getUserId().toString(), USER_PUBLISH_SCORE);
-                break;
+        String userId = event.getUserId().toString();
+        int score = getScore(event.getType().name());
+        tokenDao.zIncr(dailyKey, userId, score);
+        tokenDao.zIncr(monthlyKey, userId, score);
+    }
+
+    private int getScore(String type) {
+        switch (type) {
+            case "USER_LOGIN":
+                return 1;
+            case "USER_LIKE":
+                return 2;
+            case "USER_COMMENT":
+                return 3;
+            case "USER_PUBLISH":
+                return 10;
             default:
+                return 0;
         }
     }
 }

@@ -14,5 +14,4 @@ public class ActivityRankStatisticEvent {
     public static final String ACTIVITY_RANK_STATISTIC_EVENT_PREFIX = "activity_rank_statistic";
     private Integer userId;
     private ActivityRankStatisticEventEnum type;
-    //TODO:所有的event要加雪花算法生成的id，保证幂等性。
 }

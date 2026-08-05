@@ -1,0 +1,64 @@
+package com.example.pai_demo.rocketmq.consumer;
+
+import com.alibaba.fastjson.JSON;
+import com.example.pai_demo.dao.TokenDao;
+import com.example.pai_demo.mapper.StatEventMessageMapper;
+import com.example.pai_demo.model.StatEventMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
+import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.GROUP_STAT_COMMENT;
+import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_COMMENT;
+
+/**
+ * 评论统计消费者（取代 CommentStatisticEventListener）
+ * 消费 paistat-comment 消息，异步更新 Redis 评论点赞统计
+ *
+ * @author GilbertYoung
+ * @date 2026/07/25 10:00
+ */
+@Component
+@Slf4j
+@ConditionalOnProperty(name = "rocketmq.consumer.enabled", havingValue = "true")
+@RocketMQMessageListener(topic = TOPIC_STAT_COMMENT, consumerGroup = GROUP_STAT_COMMENT)
+public class CommentStatisticConsumer implements RocketMQListener<String> {
+    private static final String HASH_KEY_PREFIX = "comment_statistic_";
+
+    @Resource
+    private TokenDao tokenDao;
+    @Resource(name = "statConsumerExecutor")
+    private ThreadPoolTaskExecutor executor;
+    @Resource
+    private StatEventMessageMapper msgMapper;
+
+    @Override
+    public void onMessage(String message) {
+        executor.execute(() -> {
+            StatEventMessage msg = JSON.parseObject(message, StatEventMessage.class);
+            log.info("Received: {}", message);
+            if (msg.getMsgId() != null && msgMapper.getByMsgId(msg.getMsgId()) != null) {
+                log.info("Duplicate message skipped: msgId={}", msg.getMsgId());
+                return;
+            }
+            try {
+                switch (msg.getEventType()) {
+                    case "COMMENT_LIKE":
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", 1);
+                        break;
+                    case "COMMENT_LIKE_CANCEL":
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", -1);
+                        break;
+                }
+                msgMapper.create(msg);
+            } catch (Exception e) {
+                log.error("CommentStatistic consume error, msgId={}", msg.getMsgId(), e);
+            }
+        });
+    }
+}
