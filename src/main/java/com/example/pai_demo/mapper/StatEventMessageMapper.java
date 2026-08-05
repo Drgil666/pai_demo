@@ -1,6 +1,6 @@
 package com.example.pai_demo.mapper;
 
-import com.example.pai_demo.model.StatEventMessage;
+import com.example.pai_demo.model.message.StatEventMessage;
 import org.apache.ibatis.annotations.*;
 
 /**

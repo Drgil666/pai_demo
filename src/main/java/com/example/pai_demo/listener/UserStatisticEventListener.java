@@ -2,8 +2,8 @@ package com.example.pai_demo.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.example.pai_demo.dao.TokenDao;
-import com.example.pai_demo.model.StatEventMessage;
 import com.example.pai_demo.model.event.UserStatisticEvent;
+import com.example.pai_demo.model.message.StatEventMessage;
 import com.example.pai_demo.utils.SnowflakeIdUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;

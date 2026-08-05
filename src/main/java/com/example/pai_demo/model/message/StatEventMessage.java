@@ -1,5 +1,6 @@
-package com.example.pai_demo.model;
+package com.example.pai_demo.model.message;
 
+import com.example.pai_demo.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
@@ -19,7 +19,6 @@ import javax.persistence.Table;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "mq_event_msg")
 @ApiModel(value = "mq_event_msg", description = "mq_event_msg")
 public class StatEventMessage extends BaseEntity {

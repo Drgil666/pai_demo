@@ -3,7 +3,7 @@ package com.example.pai_demo.rocketmq.consumer;
 import com.alibaba.fastjson.JSON;
 import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.mapper.StatEventMessageMapper;
-import com.example.pai_demo.model.StatEventMessage;
+import com.example.pai_demo.model.message.StatEventMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;

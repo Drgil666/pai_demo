@@ -9,9 +9,9 @@ import com.example.pai_demo.model.User;
 import com.example.pai_demo.model.UserFollow;
 import com.example.pai_demo.model.UserHistory;
 import com.example.pai_demo.model.event.UserStatisticEvent;
+import com.example.pai_demo.model.message.NotifyEventMessage;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
-import com.example.pai_demo.service.NotifyService;
 import com.example.pai_demo.service.UserFollowService;
 import com.example.pai_demo.service.UserHistoryService;
 import com.example.pai_demo.utils.AssertionUtil;
@@ -41,8 +41,6 @@ public class UserFollowController {
     private UserFollowService userFollowService;
     @Resource
     private UserHistoryService userHistoryService;
-    @Resource
-    private NotifyService notifyService;
     @Resource
     private ApplicationEventPublisher eventPublisher;
 
@@ -77,7 +75,7 @@ public class UserFollowController {
             notify.setOperateUserId(userFollow.getUserId());
             notify.setContent(NOTIFY_SUBSCRIBE_CONTENT);
             notify.setNotifyUserId(userFollow.getFollowId());
-            notifyService.createNotify(notify);
+            eventPublisher.publishEvent(new NotifyEventMessage(notify));
             return ResponseVO.createSuc(userFollow);
         } else {
             return ResponseVO.createErr(CREATE_USER_FOLLOW_ERROR);

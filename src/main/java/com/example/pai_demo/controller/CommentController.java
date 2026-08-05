@@ -10,10 +10,14 @@ import com.example.pai_demo.model.Notify;
 import com.example.pai_demo.model.UserHistory;
 import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
+import com.example.pai_demo.model.message.NotifyEventMessage;
 import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
-import com.example.pai_demo.service.*;
+import com.example.pai_demo.service.ArticleService;
+import com.example.pai_demo.service.CommentService;
+import com.example.pai_demo.service.UserHistoryService;
+import com.example.pai_demo.service.UserService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
@@ -44,8 +48,6 @@ public class CommentController {
     private ArticleService articleService;
     @Resource
     private UserService userService;
-    @Resource
-    private NotifyService notifyService;
     @Resource
     private UserHistoryService userHistoryService;
     @Resource
@@ -91,7 +93,7 @@ public class CommentController {
                 notify.setContent(NOTIFY_COMMENT_CONTENT);
                 notify.setNotifyUserId(commentService.getCommentById(comment.getParentCommentId()).getUserId());
             }
-            notifyService.createNotify(notify);
+            eventPublisher.publishEvent(new NotifyEventMessage(notify));
             //创建用户流水
             UserHistory userHistory = new UserHistory();
             userHistory.setUserId(comment.getUserId());

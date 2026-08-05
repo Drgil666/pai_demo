@@ -7,9 +7,13 @@ import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.*;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.model.event.UserStatisticEvent;
+import com.example.pai_demo.model.message.NotifyEventMessage;
 import com.example.pai_demo.model.vo.ResponseVO;
 import com.example.pai_demo.model.vo.ReturnPageVO;
-import com.example.pai_demo.service.*;
+import com.example.pai_demo.service.ArticleService;
+import com.example.pai_demo.service.UserFavoriteService;
+import com.example.pai_demo.service.UserHistoryService;
+import com.example.pai_demo.service.UserService;
 import com.example.pai_demo.utils.AssertionUtil;
 import com.example.pai_demo.utils.ListPageUtil;
 import com.github.pagehelper.PageInfo;
@@ -41,8 +45,6 @@ public class UserFavoriteController {
     private ArticleService articleService;
     @Resource
     private UserHistoryService userHistoryService;
-    @Resource
-    private NotifyService notifyService;
     @Resource
     private ApplicationEventPublisher eventPublisher;
 
@@ -83,7 +85,7 @@ public class UserFavoriteController {
             notify.setOperateUserId(userFavorite.getUserId());
             notify.setContent(NOTIFY_FAVORITE_CONTENT);
             notify.setNotifyUserId(articleService.getArticleById(userFavorite.getArticleId()).getUserId());
-            notifyService.createNotify(notify);
+            eventPublisher.publishEvent(new NotifyEventMessage(notify));
             return ResponseVO.createSuc(userFavorite);
         } else {
             return ResponseVO.createErr(CREATE_USER_FAVORITE_ERROR);

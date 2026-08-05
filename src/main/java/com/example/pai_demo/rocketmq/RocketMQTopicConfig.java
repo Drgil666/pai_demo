@@ -19,6 +19,9 @@ public class RocketMQTopicConfig {
     public static final String GROUP_STAT_ACTIVITY = "pai-stat-activity-group";
     public static final String GROUP_STAT_COMMENT = "pai-stat-comment-group";
 
+    public static final String TOPIC_STAT_NOTIFY = "pai-stat-notify";
+    public static final String GROUP_STAT_NOTIFY = "pai-stat-notify-group";
+
     public static final String[] ALL_TOPICS = {
             TOPIC_STAT_USER, TOPIC_STAT_ARTICLE, TOPIC_STAT_ACTIVITY, TOPIC_STAT_COMMENT
     };
