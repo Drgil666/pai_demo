@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@Entity
 @Table(name = "mq_event_msg")
 @ApiModel(value = "mq_event_msg", description = "mq_event_msg")
 public class StatEventMessage extends BaseEntity {
@@ -45,13 +47,13 @@ public class StatEventMessage extends BaseEntity {
      */
     @ApiModelProperty(value = "变更数量，默认 1")
     @Column(name = "count")
-    private long count = 1;
+    private Long count = 1L;
 
     public StatEventMessage(Long msgId, String eventType, Integer targetId) {
         this.msgId = msgId;
         this.eventType = eventType;
         this.targetId = targetId;
-        this.count = 1;
+        this.count = 1L;
     }
 
     public StatEventMessage(Long msgId, String eventType, Integer targetId, long count) {
