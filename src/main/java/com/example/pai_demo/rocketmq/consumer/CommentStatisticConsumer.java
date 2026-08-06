@@ -45,10 +45,10 @@ public class CommentStatisticConsumer implements RocketMQListener<String> {
             try {
                 switch (msg.getEventType()) {
                     case "COMMENT_LIKE":
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", msg.getCount());
                         break;
                     case "COMMENT_LIKE_CANCEL":
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), "comment_like", -msg.getCount());
                         break;
                 }
             } catch (Exception e) {

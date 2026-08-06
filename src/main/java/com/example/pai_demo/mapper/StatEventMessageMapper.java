@@ -11,8 +11,8 @@ import org.apache.ibatis.annotations.*;
 public interface StatEventMessageMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("insert into mq_event_msg (msg_id, event_type, target_id, create_time, update_time, is_delete) " +
-            "values (#{msg.msgId}, #{msg.eventType}, #{msg.targetId}, #{msg.createTime}, #{msg.updateTime}, #{msg.isDelete})")
+    @Insert("insert into mq_event_msg (msg_id, event_type, target_id, count, create_time, update_time, is_delete) " +
+            "values (#{msg.msgId}, #{msg.eventType}, #{msg.targetId}, #{msg.count}, #{msg.createTime}, #{msg.updateTime}, #{msg.isDelete})")
     Long create(@Param("msg") StatEventMessage msg);
 
     @Select("select * from mq_event_msg where id = #{id} LIMIT 1")

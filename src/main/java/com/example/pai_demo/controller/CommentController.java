@@ -120,13 +120,11 @@ public class CommentController {
         if (commentService.updateCommentSelective(comment) == 1) {
             if (comment.getIsDelete() == 1) {
                 Long cnt = commentService.deleteCommentsByTopCommentId(comment.getId());
-                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
                 ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
                 articleStatisticEvent.setArticleId(backup.getArticleId());
                 articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
-                for (long i = 0L; i <= cnt; i++) {
-                    eventPublisher.publishEvent(articleStatisticEvent);
-                }
+                articleStatisticEvent.setCount(cnt + 1);
+                eventPublisher.publishEvent(articleStatisticEvent);
                 //创建用户流水
                 UserHistory userHistory = new UserHistory();
                 userHistory.setUserId(backup.getUserId());
@@ -153,13 +151,11 @@ public class CommentController {
         if (commentService.updateCommentAll(comment) == 1) {
             if (comment.getIsDelete() == 1) {
                 Long cnt = commentService.deleteCommentsByTopCommentId(comment.getId());
-                //评论被删除时,所有的子评论都要被删除,并且文章的缓存要同步更新
                 ArticleStatisticEvent articleStatisticEvent = new ArticleStatisticEvent();
                 articleStatisticEvent.setArticleId(backup.getArticleId());
                 articleStatisticEvent.setType(ArticleStatisticEventEnum.ARTICLE_COMMENT_CANCEL);
-                for (long i = 0L; i < cnt; i++) {
-                    eventPublisher.publishEvent(articleStatisticEvent);
-                }
+                articleStatisticEvent.setCount(cnt + 1);
+                eventPublisher.publishEvent(articleStatisticEvent);
                 //创建用户流水
                 UserHistory userHistory = new UserHistory();
                 userHistory.setUserId(backup.getUserId());

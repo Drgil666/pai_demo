@@ -14,4 +14,5 @@ public class ArticleStatisticEvent {
     public static final String ARTICLE_STATISTIC_EVENT_PREFIX = "article_statistic_";
     private Integer articleId;
     private ArticleStatisticEventEnum type;
+    private long count = 1;
 }

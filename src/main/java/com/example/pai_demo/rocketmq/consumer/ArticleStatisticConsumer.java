@@ -54,25 +54,25 @@ public class ArticleStatisticConsumer implements RocketMQListener<String> {
             try {
                 switch (ArticleStatisticEventEnum.valueOf(msg.getEventType())) {
                     case ARTICLE_READ:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_READ.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_READ.getMsg(), msg.getCount());
                         break;
                     case ARTICLE_LIKE:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_LIKE.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_LIKE.getMsg(), msg.getCount());
                         break;
                     case ARTICLE_COMMENT:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_COMMENT.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_COMMENT.getMsg(), msg.getCount());
                         break;
                     case ARTICLE_FAVORITE:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_FAVORITE.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_FAVORITE.getMsg(), msg.getCount());
                         break;
                     case ARTICLE_LIKE_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_LIKE.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_LIKE.getMsg(), -msg.getCount());
                         break;
                     case ARTICLE_COMMENT_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_COMMENT.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_COMMENT.getMsg(), -msg.getCount());
                         break;
                     case ARTICLE_FAVORITE_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_FAVORITE.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_FAVORITE.getMsg(), -msg.getCount());
                         break;
                 }
             } catch (Exception e) {

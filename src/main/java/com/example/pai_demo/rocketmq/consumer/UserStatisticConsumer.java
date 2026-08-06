@@ -54,28 +54,28 @@ public class UserStatisticConsumer implements RocketMQListener<String> {
             try {
                 switch (UserStatisticEventEnum.valueOf(msg.getEventType())) {
                     case USER_ARTICLE:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_ARTICLE.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_ARTICLE.getMsg(), msg.getCount());
                         break;
                     case USER_FOLLOW:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOW.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOW.getMsg(), msg.getCount());
                         break;
                     case USER_FOLLOWER:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOWER.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOWER.getMsg(), msg.getCount());
                         break;
                     case USER_FAVORITE:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FAVORITE.getMsg(), 1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FAVORITE.getMsg(), msg.getCount());
                         break;
                     case USER_ARTICLE_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_ARTICLE.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_ARTICLE.getMsg(), -msg.getCount());
                         break;
                     case USER_FOLLOW_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOW.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOW.getMsg(), -msg.getCount());
                         break;
                     case USER_FOLLOWER_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOWER.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FOLLOWER.getMsg(), -msg.getCount());
                         break;
                     case USER_FAVORITE_CANCEL:
-                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FAVORITE.getMsg(), -1);
+                        tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), USER_FAVORITE.getMsg(), -msg.getCount());
                         break;
                 }
             } catch (Exception e) {

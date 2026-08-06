@@ -25,7 +25,7 @@ public class ArticleStatisticEventListener {
     @Async
     public void articleStatisticEventListener(ArticleStatisticEvent event) {
         StatEventMessage msg = new StatEventMessage(SnowflakeIdUtil.generateId(),
-                event.getType().name(), event.getArticleId());
+                event.getType().name(), event.getArticleId(), event.getCount());
         rocketMQTemplate.convertAndSend(TOPIC_STAT_ARTICLE, msg);
         log.info("Sent: {}", JSON.toJSONString(msg));
     }

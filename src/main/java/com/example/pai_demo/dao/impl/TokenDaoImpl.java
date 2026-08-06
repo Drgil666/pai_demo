@@ -78,7 +78,7 @@ public class TokenDaoImpl implements TokenDao {
      * @return 是否成功
      */
     @Override
-    public void hIncr(String key, String field, Integer cnt) {
+    public void hIncr(String key, String field, Long cnt) {
         stringRedisTemplate.execute((RedisCallback<Long>) con -> con.hIncrBy(key.getBytes(StandardCharsets.UTF_8), field.getBytes(StandardCharsets.UTF_8), cnt));
     }
 
@@ -107,7 +107,7 @@ public class TokenDaoImpl implements TokenDao {
      * @return
      */
     @Override
-    public void zIncr(String setName, String member, Integer cnt) {
+    public void zIncr(String setName, String member, Long cnt) {
         stringRedisTemplate.opsForZSet().incrementScore(setName, member, cnt);
     }
 

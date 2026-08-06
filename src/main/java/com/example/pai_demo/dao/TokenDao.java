@@ -41,7 +41,7 @@ public interface TokenDao {
      * @param cnt   增加的值
      * @return 是否成功
      */
-    void hIncr(String key, String field, Integer cnt);
+    void hIncr(String key, String field, Long cnt);
 
     /**
      * 根据key和域获取值
@@ -59,7 +59,7 @@ public interface TokenDao {
      * @param member  成员名
      * @param cnt     增加的分数
      */
-    void zIncr(String setName, String member, Integer cnt);
+    void zIncr(String setName, String member, Long cnt);
 
     /**
      * 获取setName中成员member的分值

@@ -29,10 +29,10 @@ import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_ACTIV
 @ConditionalOnProperty(name = "rocketmq.consumer.enabled", havingValue = "true")
 @RocketMQMessageListener(topic = TOPIC_STAT_ACTIVITY, consumerGroup = GROUP_STAT_ACTIVITY)
 public class ActivityRankStatisticConsumer implements RocketMQListener<String> {
-    private static final Integer USER_LOGIN_SCORE = 1;
-    private static final Integer USER_LIKE_SCORE = 2;
-    private static final Integer USER_COMMENT_SCORE = 3;
-    private static final Integer USER_PUBLISH_SCORE = 10;
+    private static final Long USER_LOGIN_SCORE = 1L;
+    private static final Long USER_LIKE_SCORE = 2L;
+    private static final Long USER_COMMENT_SCORE = 3L;
+    private static final Long USER_PUBLISH_SCORE = 10L;
 
     @Resource
     private TokenDao tokenDao;

@@ -3,8 +3,8 @@ package com.example.pai_demo.model.message;
 import com.example.pai_demo.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -17,8 +17,8 @@ import javax.persistence.Table;
  * @date 2026/07/25 10:00
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "mq_event_msg")
 @ApiModel(value = "mq_event_msg", description = "mq_event_msg")
 public class StatEventMessage extends BaseEntity {
@@ -40,4 +40,24 @@ public class StatEventMessage extends BaseEntity {
     @ApiModelProperty(value = "目标ID(userId / articleId / commentId)")
     @Column(name = "target_id", nullable = false)
     private Integer targetId;
+    /**
+     * 变更数量，默认 1
+     */
+    @ApiModelProperty(value = "变更数量，默认 1")
+    @Column(name = "count")
+    private long count = 1;
+
+    public StatEventMessage(Long msgId, String eventType, Integer targetId) {
+        this.msgId = msgId;
+        this.eventType = eventType;
+        this.targetId = targetId;
+        this.count = 1;
+    }
+
+    public StatEventMessage(Long msgId, String eventType, Integer targetId, long count) {
+        this.msgId = msgId;
+        this.eventType = eventType;
+        this.targetId = targetId;
+        this.count = count;
+    }
 }
