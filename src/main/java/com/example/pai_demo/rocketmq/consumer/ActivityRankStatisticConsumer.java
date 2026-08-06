@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +46,9 @@ public class ActivityRankStatisticConsumer implements RocketMQListener<String> {
         executor.execute(() -> {
             StatEventMessage msg = JSON.parseObject(message, StatEventMessage.class);
             log.info("Received: {}", message);
-            if (msg.getMsgId() != null && statEventMessageMapper.getByMsgId(msg.getMsgId()) != null) {
+            try {
+                statEventMessageMapper.create(msg);
+            } catch (DuplicateKeyException e) {
                 log.info("Duplicate message skipped: msgId={}", msg.getMsgId());
                 return;
             }
@@ -71,7 +74,6 @@ public class ActivityRankStatisticConsumer implements RocketMQListener<String> {
                         tokenDao.zIncr(monthlyKey, userId, USER_PUBLISH_SCORE);
                         break;
                 }
-                statEventMessageMapper.create(msg);
             } catch (Exception e) {
                 log.error("ActivityRankStatistic consume error, msgId={}", msg.getMsgId(), e);
             }

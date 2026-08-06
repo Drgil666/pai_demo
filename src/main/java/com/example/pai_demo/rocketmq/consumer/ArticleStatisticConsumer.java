@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +38,16 @@ public class ArticleStatisticConsumer implements RocketMQListener<String> {
     @Resource(name = "statConsumerExecutor")
     private ThreadPoolTaskExecutor executor;
     @Resource
-    private StatEventMessageMapper msgMapper;
+    private StatEventMessageMapper statEventMessageMapper;
 
     @Override
     public void onMessage(String message) {
         executor.execute(() -> {
             StatEventMessage msg = JSON.parseObject(message, StatEventMessage.class);
             log.info("Received: {}", message);
-            if (msg.getMsgId() != null && msgMapper.getByMsgId(msg.getMsgId()) != null) {
+            try {
+                statEventMessageMapper.create(msg);
+            } catch (DuplicateKeyException e) {
                 log.info("Duplicate message skipped: msgId={}", msg.getMsgId());
                 return;
             }
@@ -72,7 +75,6 @@ public class ArticleStatisticConsumer implements RocketMQListener<String> {
                         tokenDao.hIncr(HASH_KEY_PREFIX + msg.getTargetId(), ARTICLE_FAVORITE.getMsg(), -1);
                         break;
                 }
-                msgMapper.create(msg);
             } catch (Exception e) {
                 log.error("ArticleStatistic consume error, msgId={}", msg.getMsgId(), e);
             }
