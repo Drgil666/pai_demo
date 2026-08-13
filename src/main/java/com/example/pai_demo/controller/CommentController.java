@@ -173,8 +173,8 @@ public class CommentController {
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取评论", notes = "根据id获取评论")
     @Authorize(Authorize.USER)
-    public ResponseVO<Comment> getCommentById(@PathVariable(name = "id") Integer id) {
-        Comment comment = commentService.getCommentById(id);
+    public ResponseVO<Comment> getCommentVOById(@PathVariable(name = "id") Integer id) {
+        Comment comment = commentService.getCommentVOById(id);
         if (comment != null) {
             return ResponseVO.createSuc(comment);
         } else {

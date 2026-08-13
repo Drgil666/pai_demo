@@ -43,6 +43,14 @@ public interface CommentService {
     Comment getCommentById(Integer id);
 
     /**
+     * 根据id获取评论vo类
+     *
+     * @param id 评论id
+     * @return 评论信息
+     */
+    CommentVO getCommentVOById(Integer id);
+
+    /**
      * 根据文章id获取评论列表
      *
      * @param articleId 文章id
