@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_USER;
+import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_MESSAGE;
 
 @Component
 @Slf4j
@@ -25,7 +25,7 @@ public class UserStatisticEventListener {
     public void userStatisticEventListener(UserStatisticEvent event) {
         StatEventMessage msg = new StatEventMessage(SnowflakeIdUtil.generateId(),
                 event.getType().name(), event.getUserId());
-        rocketMQTemplate.convertAndSend(TOPIC_STAT_USER, msg);
+        rocketMQTemplate.convertAndSend(TOPIC_STAT_MESSAGE, msg);
         log.info("Sent: {}", JSON.toJSONString(msg));
     }
 }

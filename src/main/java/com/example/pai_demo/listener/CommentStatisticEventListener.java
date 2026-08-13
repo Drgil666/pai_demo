@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_COMMENT;
+import static com.example.pai_demo.rocketmq.RocketMQTopicConfig.TOPIC_STAT_MESSAGE;
 
 @Component
 @Slf4j
 public class CommentStatisticEventListener {
-    private static final String HASH_KEY_PREFIX = "comment_statistic_";
-
     @Resource
     private RocketMQTemplate rocketMQTemplate;
     @EventListener(classes = CommentStatisticEvent.class)
@@ -26,7 +24,7 @@ public class CommentStatisticEventListener {
     public void commentStatisticEventListener(CommentStatisticEvent event) {
         StatEventMessage msg = new StatEventMessage(SnowflakeIdUtil.generateId(),
                 event.getType().name(), event.getCommentId());
-        rocketMQTemplate.convertAndSend(TOPIC_STAT_COMMENT, msg);
+        rocketMQTemplate.convertAndSend(TOPIC_STAT_MESSAGE, msg);
         log.info("Sent: {}", JSON.toJSONString(msg));
     }
 }

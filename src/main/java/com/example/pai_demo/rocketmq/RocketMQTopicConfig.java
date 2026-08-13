@@ -8,22 +8,17 @@ package com.example.pai_demo.rocketmq;
  */
 public class RocketMQTopicConfig {
     // ========== Topics ==========
-    public static final String TOPIC_STAT_USER = "pai-stat-user";
-    public static final String TOPIC_STAT_ARTICLE = "pai-stat-article";
+    public static final String TOPIC_STAT_MESSAGE = "pai-stat-message";
     public static final String TOPIC_STAT_ACTIVITY = "pai-stat-activity";
-    public static final String TOPIC_STAT_COMMENT = "pai-stat-comment";
+    public static final String TOPIC_STAT_NOTIFY = "pai-stat-notify";
 
     // ========== Consumer Groups ==========
-    public static final String GROUP_STAT_USER = "pai-stat-user-group";
-    public static final String GROUP_STAT_ARTICLE = "pai-stat-article-group";
+    public static final String GROUP_STAT_MESSAGE = "pai-stat-message-group";
     public static final String GROUP_STAT_ACTIVITY = "pai-stat-activity-group";
-    public static final String GROUP_STAT_COMMENT = "pai-stat-comment-group";
-
-    public static final String TOPIC_STAT_NOTIFY = "pai-stat-notify";
     public static final String GROUP_STAT_NOTIFY = "pai-stat-notify-group";
 
     public static final String[] ALL_TOPICS = {
-            TOPIC_STAT_USER, TOPIC_STAT_ARTICLE, TOPIC_STAT_ACTIVITY, TOPIC_STAT_COMMENT
+            TOPIC_STAT_MESSAGE, TOPIC_STAT_ACTIVITY, TOPIC_STAT_NOTIFY
     };
 
     private RocketMQTopicConfig() {
