@@ -38,8 +38,6 @@ public class CommentServiceImpl implements CommentService {
     @Resource
     private TokenDao tokenDao;
     public static final String REDIS_COMMENT_ID_KEY_PREFIX = "comment:id:";
-    public static final String REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX = "comment:topCommentId:";
-    public static final String REDIS_COMMENT_ARTICLE_ID_KEY_PREFIX = "comment:articleId:";
 
     /**
      * 创建评论
@@ -57,12 +55,6 @@ public class CommentServiceImpl implements CommentService {
         if (commentMapper.createComment(comment)) {
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + comment.getId();
             tokenDao.deleteValue(redisKey);
-            redisKey = REDIS_COMMENT_ARTICLE_ID_KEY_PREFIX + comment.getArticleId();
-            tokenDao.deleteValue(redisKey);
-            if (comment.getTopCommentId() != null) {
-                redisKey = REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX + comment.getTopCommentId();
-                tokenDao.deleteValue(redisKey);
-            }
             return true;
         } else {
             return false;
@@ -84,12 +76,6 @@ public class CommentServiceImpl implements CommentService {
         if (result == 1) {
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + old.getId();
             tokenDao.deleteValue(redisKey);
-            redisKey = REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX + old.getId();
-            tokenDao.deleteValue(redisKey);
-            if (old.getTopCommentId() != null) {
-                redisKey = REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX + old.getTopCommentId();
-                tokenDao.deleteValue(redisKey);
-            }
         }
         return result;
     }
@@ -109,12 +95,6 @@ public class CommentServiceImpl implements CommentService {
         if (result == 1) {
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + old.getId();
             tokenDao.deleteValue(redisKey);
-            redisKey = REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX + old.getId();
-            tokenDao.deleteValue(redisKey);
-            if (old.getTopCommentId() != null) {
-                redisKey = REDIS_COMMENT_TOP_COMMENT_ID_KEY_PREFIX + old.getTopCommentId();
-                tokenDao.deleteValue(redisKey);
-            }
         }
         return result;
     }
@@ -196,7 +176,7 @@ public class CommentServiceImpl implements CommentService {
     @NotNull
     private CommentVO getCommentVO(Comment comment) {
         CommentVO commentVO = new CommentVO();
-        BeanUtils.copyProperties(commentVO, commentVO);
+        BeanUtils.copyProperties(comment, commentVO);
         Long likeCount = tokenDao.hScore(CommentStatisticEvent.COMMENT_STATISTIC_EVENT_PREFIX + comment.getId(), COMMENT_LIKE.getMsg());
         commentVO.setLikeCount(likeCount);
         return commentVO;
