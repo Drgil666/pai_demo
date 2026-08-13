@@ -14,9 +14,9 @@ public interface TokenDao {
      *
      * @param key      键
      * @param value    值
-     * @param isExpire 是否过期
+     * @param expireTime 是否过期时间
      */
-    void setValue(String key, String value, Boolean isExpire);
+    void setValue(String key, String value, Long expireTime);
 
     /**
      * 获取键对应的值

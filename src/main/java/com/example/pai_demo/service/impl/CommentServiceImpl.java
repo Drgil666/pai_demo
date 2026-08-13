@@ -10,6 +10,7 @@ import com.example.pai_demo.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,8 @@ public class CommentServiceImpl implements CommentService {
     @Resource
     private TokenDao tokenDao;
     public static final String REDIS_COMMENT_ID_KEY_PREFIX = "comment:id:";
-
+    @Value("${redis.expire.commentTime}")
+    private Long commentExpireTime;
     /**
      * 创建评论
      *
@@ -125,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
         }
         Comment comment = getCommentById(id);
         CommentVO commentVO = getCommentVO(comment);
-        tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), true);
+        tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), commentExpireTime);
         return commentVO;
     }
 
@@ -143,7 +145,7 @@ public class CommentServiceImpl implements CommentService {
         for (Comment comment : commentList) {
             CommentVO commentVO = getCommentVO(comment);
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + comment.getId();
-            tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), true);
+            tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), commentExpireTime);
             commentVOList.add(commentVO);
         }
         return commentVOList;
@@ -167,7 +169,7 @@ public class CommentServiceImpl implements CommentService {
         for (Comment comment : commentList) {
             CommentVO commentVO = getCommentVO(comment);
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + comment.getId();
-            tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), true);
+            tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), commentExpireTime);
             commentVOList.add(commentVO);
         }
         return commentVOList;

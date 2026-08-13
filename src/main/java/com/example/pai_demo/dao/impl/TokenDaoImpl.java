@@ -3,7 +3,6 @@ package com.example.pai_demo.dao.impl;
 
 import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.model.event.ActivityRankStatisticEvent;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -24,8 +23,6 @@ import java.util.concurrent.TimeUnit;
 public class TokenDaoImpl implements TokenDao {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-    @Value("${redis.expire.time}")
-    private Long expireTime;
 
     public static final String DAILY_KEY = "daily";
     public static final String MONTHLY_KEY = "monthly";
@@ -37,11 +34,11 @@ public class TokenDaoImpl implements TokenDao {
      *
      * @param key      键
      * @param value    值
-     * @param isExpire 是否过期
+     * @param expireTime 是否过期
      */
     @Override
-    public void setValue(String key, String value, Boolean isExpire) {
-        if (isExpire) {
+    public void setValue(String key, String value, Long expireTime) {
+        if (expireTime != null) {
             stringRedisTemplate.opsForValue().set(key, value, expireTime, TimeUnit.SECONDS);
         } else {
             stringRedisTemplate.opsForValue().set(key, value);

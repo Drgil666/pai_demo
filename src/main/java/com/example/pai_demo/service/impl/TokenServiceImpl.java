@@ -12,6 +12,7 @@ import com.example.pai_demo.model.vo.UserActivityVO;
 import com.example.pai_demo.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,8 @@ public class TokenServiceImpl implements TokenService {
     private TokenDao tokenDao;
     @Resource
     private UserMapper userMapper;
-
+    @Value("${redis.expire.tokenTime}")
+    private Long tokenExpireTime;
     /**
      * 获取用户当天的活跃度
      *
@@ -118,8 +120,8 @@ public class TokenServiceImpl implements TokenService {
         RedisUserVO redisUserVO = new RedisUserVO();
         redisUserVO.setUserId(userId);
         redisUserVO.setLoginTime(new Date().getTime());
-        tokenDao.setValue("login:token:" + token, JSON.toJSONString(redisUserVO), true);
-        tokenDao.setValue("login:user:" + userId, token, true);
+        tokenDao.setValue("login:token:" + token, JSON.toJSONString(redisUserVO), tokenExpireTime);
+        tokenDao.setValue("login:user:" + userId, token, tokenExpireTime);
         return token;
     }
 
