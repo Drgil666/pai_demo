@@ -28,12 +28,13 @@ public class TokenDaoImpl implements TokenDao {
     public static final String MONTHLY_KEY = "monthly";
     public static final DateTimeFormatter DAILY_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
     public static final DateTimeFormatter MONTHLY_FORMAT = DateTimeFormatter.ofPattern("yyyyMM");
+    public static final String REDIS_LOCK_PREFIX = "redis_lock:";
 
     /**
      * 为redis设置键值对
      *
-     * @param key      键
-     * @param value    值
+     * @param key        键
+     * @param value      值
      * @param expireTime 是否过期
      */
     @Override

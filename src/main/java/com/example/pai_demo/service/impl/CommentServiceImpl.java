@@ -12,6 +12,8 @@ import com.example.pai_demo.service.CommentService;
 import com.example.pai_demo.utils.ListPageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,9 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static com.example.pai_demo.dao.impl.TokenDaoImpl.REDIS_LOCK_PREFIX;
 import static com.example.pai_demo.enums.CommentStatisticEventEnum.COMMENT_LIKE;
 
 /**
@@ -48,6 +52,9 @@ public class CommentServiceImpl implements CommentService {
     private EsQueryDao esQueryDao;
     @Value("${elasticsearch.enabled:false}")
     private Boolean esEnabled;
+    @Resource
+    private RedissonClient redissonClient;
+
     /**
      * 创建评论
      *
@@ -129,6 +136,38 @@ public class CommentServiceImpl implements CommentService {
     public CommentVO getCommentVOById(Integer id) {
         String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + id;
         String redisValue = tokenDao.getValue(redisKey);
+        String redisLockKey = REDIS_COMMENT_ID_KEY_PREFIX + REDIS_LOCK_PREFIX + id;
+        if (redisValue != null) {
+            return JSONObject.parseObject(redisValue, CommentVO.class);
+        }
+        // 缓存未命中，加分布式锁，防止缓存击穿
+        RLock lock = redissonClient.getLock(redisLockKey);
+        try {
+            // 最大等待 3 秒，持有 30 秒后自动释放
+            if (lock.tryLock(3, 30, TimeUnit.SECONDS)) {
+                try {
+                    // 双重检查：等待期间可能已有线程回写缓存
+                    redisValue = tokenDao.getValue(redisKey);
+                    if (redisValue != null) {
+                        return JSONObject.parseObject(redisValue, CommentVO.class);
+                    }
+                    // 从 MySQL 加载并回写缓存
+                    Comment comment = getCommentById(id);
+                    CommentVO commentVO = getCommentVO(comment);
+                    tokenDao.setValue(redisKey, JSONObject.toJSONString(commentVO), commentExpireTime);
+                    return commentVO;
+                } finally {
+                    if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                        lock.unlock();
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // 兜底：未能获取锁或等待被中断，再次读缓存，仍未命中则直接查库
+        redisValue = tokenDao.getValue(redisKey);
         if (redisValue != null) {
             return JSONObject.parseObject(redisValue, CommentVO.class);
         }
