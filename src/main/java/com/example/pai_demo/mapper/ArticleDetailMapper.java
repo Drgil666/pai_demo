@@ -65,6 +65,6 @@ public interface ArticleDetailMapper {
      * @param articleId 文章id
      * @return 文章内容列表
      */
-    @Select("select * from article_detail where article_id=#{articleId} and is_delete=0")
+    @Select("select * from article_detail where article_id=#{articleId} and is_delete=0 order by version desc")
     List<ArticleDetail> getArticleDetailListByArticleId(@Param("articleId") Integer articleId);
 }
