@@ -3,6 +3,7 @@ package com.example.pai_demo.utils;
 
 import com.example.pai_demo.exception.ErrorCode;
 import com.example.pai_demo.model.vo.ReturnPageVO;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.Data;
@@ -56,5 +57,65 @@ public class ListPageUtil {
         returnPageVO.setTotal(data.getTotal());
         returnPageVO.setData(data.getList());
         return returnPageVO;
+    }
+
+    /**
+     * 获取当前线程 PageHelper 分页的起始偏移量（供 ES 等非 MyBatis 查询复用）
+     */
+    public static int pageFrom() {
+        Page<?> local = PageHelper.getLocalPage();
+        int pageNum = local != null ? local.getPageNum() : 1;
+        int pageSize = local != null ? local.getPageSize() : PAGE_SIZE_LIMIT;
+        if (pageSize < 1) {
+            pageSize = PAGE_SIZE_LIMIT;
+        }
+        return (pageNum - 1) * pageSize;
+    }
+
+    /**
+     * 获取当前线程 PageHelper 分页的页大小
+     */
+    public static int pageSize() {
+        Page<?> local = PageHelper.getLocalPage();
+        int pageSize = local != null ? local.getPageSize() : PAGE_SIZE_LIMIT;
+        return pageSize < 1 ? PAGE_SIZE_LIMIT : pageSize;
+    }
+
+    /**
+     * 获取当前线程 PageHelper 排序的首个字段名（orderBy 已为 snake_case，可直接作为 ES 字段）
+     */
+    public static String orderField() {
+        String orderBy = orderBy();
+        if (orderBy == null) {
+            return "update_time";
+        }
+        String[] parts = orderBy.split(",")[0].trim().split("\\s+");
+        return parts[0];
+    }
+
+    /**
+     * 当前线程 PageHelper 排序是否升序
+     */
+    public static boolean orderAsc() {
+        String orderBy = orderBy();
+        if (orderBy == null) {
+            return false;
+        }
+        String[] parts = orderBy.split(",")[0].trim().split("\\s+");
+        return parts.length > 1 && "asc".equalsIgnoreCase(parts[1]);
+    }
+
+    private static String orderBy() {
+        Page<?> local = PageHelper.getLocalPage();
+        String orderBy = local != null ? local.getOrderBy() : null;
+        return (orderBy == null || orderBy.trim().isEmpty()) ? null : orderBy.trim();
+    }
+
+    /**
+     * 清除当前线程的 PageHelper 分页，避免后续 MyBatis 查询（如标签查询）被误分页。
+     * ES 路径读不到 MyBatis 的首个查询来消费分页信息，需要手动清理。
+     */
+    public static void clearPage() {
+        PageHelper.clearPage();
     }
 }

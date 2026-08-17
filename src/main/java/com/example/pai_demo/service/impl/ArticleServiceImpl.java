@@ -1,16 +1,20 @@
 package com.example.pai_demo.service.impl;
 
+import com.example.pai_demo.dao.EsQueryDao;
 import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.mapper.ArticleMapper;
 import com.example.pai_demo.mapper.ArticleTagMapper;
 import com.example.pai_demo.model.Article;
 import com.example.pai_demo.model.Tag;
+import com.example.pai_demo.model.elastic_search.ArticleDocument;
 import com.example.pai_demo.model.event.ArticleStatisticEvent;
 import com.example.pai_demo.model.vo.ArticleVO;
 import com.example.pai_demo.service.ArticleService;
+import com.example.pai_demo.utils.ListPageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +37,10 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleTagMapper articleTagMapper;
     @Resource
     private TokenDao tokenDao;
+    @Resource
+    private EsQueryDao esQueryDao;
+    @Value("${elasticsearch.enabled:false}")
+    private Boolean esEnabled;
 
     /**
      * 创建文章
@@ -105,11 +113,20 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public List<ArticleVO> getArticleVOListByUserId(Integer userId, String keyword) {
-        List<Article> articleList = articleMapper.getArticleListByUserId(userId, keyword);
+        List<Article> articleList;
+        if (Boolean.TRUE.equals(esEnabled)) {
+            int from = ListPageUtil.pageFrom();
+            int size = ListPageUtil.pageSize();
+            String orderField = ListPageUtil.orderField();
+            boolean asc = ListPageUtil.orderAsc();
+            ListPageUtil.clearPage();
+            articleList = toArticles(esQueryDao.findArticlesByUserId(userId, keyword, from, size, orderField, asc));
+        } else {
+            articleList = articleMapper.getArticleListByUserId(userId, keyword);
+        }
         List<ArticleVO> articleVOList = new ArrayList<>();
         for (Article article : articleList) {
-            ArticleVO articleVO = getArticleVO(article, keyword);
-            articleVOList.add(articleVO);
+            articleVOList.add(getArticleVO(article, keyword));
         }
         return articleVOList;
     }
@@ -123,13 +140,32 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public List<ArticleVO> getArticleVOListByCategoryId(Integer categoryId, String keyword) {
-        List<Article> articleList = articleMapper.getArticleListByCategoryId(categoryId, keyword);
+        List<Article> articleList;
+        if (Boolean.TRUE.equals(esEnabled)) {
+            int from = ListPageUtil.pageFrom();
+            int size = ListPageUtil.pageSize();
+            String orderField = ListPageUtil.orderField();
+            boolean asc = ListPageUtil.orderAsc();
+            ListPageUtil.clearPage();
+            articleList = toArticles(esQueryDao.findArticlesByCategoryId(categoryId, keyword, from, size, orderField, asc));
+        } else {
+            articleList = articleMapper.getArticleListByCategoryId(categoryId, keyword);
+        }
         List<ArticleVO> articleVOList = new ArrayList<>();
         for (Article article : articleList) {
-            ArticleVO articleVO = getArticleVO(article, keyword);
-            articleVOList.add(articleVO);
+            articleVOList.add(getArticleVO(article, keyword));
         }
         return articleVOList;
+    }
+
+    private List<Article> toArticles(List<ArticleDocument> documents) {
+        List<Article> articles = new ArrayList<>();
+        for (ArticleDocument document : documents) {
+            Article article = new Article();
+            BeanUtils.copyProperties(document, article);
+            articles.add(article);
+        }
+        return articles;
     }
 
     @NotNull

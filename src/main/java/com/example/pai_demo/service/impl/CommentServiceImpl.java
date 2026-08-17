@@ -1,12 +1,15 @@
 package com.example.pai_demo.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.pai_demo.dao.EsQueryDao;
 import com.example.pai_demo.dao.TokenDao;
 import com.example.pai_demo.mapper.CommentMapper;
 import com.example.pai_demo.model.Comment;
+import com.example.pai_demo.model.elastic_search.CommentDocument;
 import com.example.pai_demo.model.event.CommentStatisticEvent;
 import com.example.pai_demo.model.vo.CommentVO;
 import com.example.pai_demo.service.CommentService;
+import com.example.pai_demo.utils.ListPageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +44,10 @@ public class CommentServiceImpl implements CommentService {
     public static final String REDIS_COMMENT_ID_KEY_PREFIX = "comment:id:";
     @Value("${redis.expire.commentTime}")
     private Long commentExpireTime;
+    @Resource
+    private EsQueryDao esQueryDao;
+    @Value("${elasticsearch.enabled:false}")
+    private Boolean esEnabled;
     /**
      * 创建评论
      *
@@ -140,8 +147,18 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public List<CommentVO> getCommentListByArticleId(Integer articleId, String keyword) {
+        List<Comment> commentList;
+        if (Boolean.TRUE.equals(esEnabled)) {
+            int from = ListPageUtil.pageFrom();
+            int size = ListPageUtil.pageSize();
+            String orderField = ListPageUtil.orderField();
+            boolean asc = ListPageUtil.orderAsc();
+            ListPageUtil.clearPage();
+            commentList = toComments(esQueryDao.findCommentsByArticleId(articleId, keyword, from, size, orderField, asc));
+        } else {
+            commentList = commentMapper.getCommentListByArticleId(articleId, keyword);
+        }
         List<CommentVO> commentVOList = new ArrayList<>();
-        List<Comment> commentList = commentMapper.getCommentListByArticleId(articleId, keyword);
         for (Comment comment : commentList) {
             CommentVO commentVO = getCommentVO(comment);
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + comment.getId();
@@ -164,8 +181,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentVO> getCommentListByTopCommentId(Integer topCommentId, String keyword) {
+        List<Comment> commentList;
+        if (Boolean.TRUE.equals(esEnabled)) {
+            int from = ListPageUtil.pageFrom();
+            int size = ListPageUtil.pageSize();
+            String orderField = ListPageUtil.orderField();
+            boolean asc = ListPageUtil.orderAsc();
+            ListPageUtil.clearPage();
+            commentList = toComments(esQueryDao.findCommentsByTopCommentId(topCommentId, keyword, from, size, orderField, asc));
+        } else {
+            commentList = commentMapper.getCommentListByTopCommentId(topCommentId, keyword);
+        }
         List<CommentVO> commentVOList = new ArrayList<>();
-        List<Comment> commentList = commentMapper.getCommentListByTopCommentId(topCommentId, keyword);
         for (Comment comment : commentList) {
             CommentVO commentVO = getCommentVO(comment);
             String redisKey = REDIS_COMMENT_ID_KEY_PREFIX + comment.getId();
@@ -173,6 +200,16 @@ public class CommentServiceImpl implements CommentService {
             commentVOList.add(commentVO);
         }
         return commentVOList;
+    }
+
+    private List<Comment> toComments(List<CommentDocument> documents) {
+        List<Comment> comments = new ArrayList<>();
+        for (CommentDocument document : documents) {
+            Comment comment = new Comment();
+            BeanUtils.copyProperties(document, comment);
+            comments.add(comment);
+        }
+        return comments;
     }
 
     @NotNull
